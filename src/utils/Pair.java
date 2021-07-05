@@ -1,7 +1,10 @@
 package utils;
 
 import java.util.Objects;
-
+/** 
+*@author jon  
+*
+*/
 public class Pair<T1, T2> {
 	private T1 x;
 	private T2 y;

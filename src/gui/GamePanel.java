@@ -30,7 +30,7 @@ public class GamePanel extends JPanel implements MouseListener {
 	private Color barvaB;
 
 	public GamePanel() {
-		setBackground(Color.LIGHT_GRAY);
+		setBackground(Color.GREEN);
 		this.addMouseListener(this);
 		barvaCrte = Color.BLACK;
 		barvaC = Color.BLACK;
@@ -98,24 +98,24 @@ public class GamePanel extends JPanel implements MouseListener {
 
 	@Override
 	public void mouseClicked(MouseEvent e) {
-		Igra igra = Vodja.igra; 
-		if(igra != null){
-			if (Vodja.clovekNaVrsti) {
-				int x = e.getX();
-				int y = e.getY();
-				int w = (int)(squareWidth());
-				int i = x / w ;
-				double di = (x % w) / squareWidth() ;
-				int j = y / w ;
-				double dj = (y % w) / squareWidth() ;
-				if (0 <= i && i < igra.N &&
-						0.5 * SIRINA_CRTE < di && di < 1.0 - 0.5 * SIRINA_CRTE &&
-						0 <= j && j < igra.N && 
-						0.5 * SIRINA_CRTE < dj && dj < 1.0 - 0.5 * SIRINA_CRTE) {
-					Vodja.igrajClovekovoPotezo (new Koordinati(j, i));
-				}
-			}
-		}
+	//	Igra igra = Vodja.igra; 
+	//	if(igra != null){
+	//		if (Vodja.clovekNaVrsti) {
+	//			int x = e.getX();
+	//			int y = e.getY();
+	//			int w = (int)(squareWidth());
+	//			int i = x / w ;
+	//			double di = (x % w) / squareWidth() ;
+	//			int j = y / w ;
+	//			double dj = (y % w) / squareWidth() ;
+	//			if (0 <= i && i < igra.N &&
+	//					0.5 * SIRINA_CRTE < di && di < 1.0 - 0.5 * SIRINA_CRTE &&
+	//					0 <= j && j < igra.N && 
+	//					0.5 * SIRINA_CRTE < dj && dj < 1.0 - 0.5 * SIRINA_CRTE) {
+	//				Vodja.igrajClovekovoPotezo (new Koordinati(j, i));
+	//			}
+	//		}
+	//	}
 	}
 
 	@Override
