@@ -5,7 +5,6 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.HashMap;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -13,9 +12,7 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 
-import rules.Game;
-import leader.Vodja;
-import leader.VrstaIgralca;
+
 
 
 /**
@@ -27,10 +24,10 @@ public class MainFrame extends JFrame implements ActionListener {
 	/**
 	 * JPanel, v katerega igramo
 	 */
-	private GamePanel polje;
+	private GamePanel gamePanel;
 
 	
-	//Statusna vrstica v spodnjem delu okna
+	//Status bar at the bottom of the screen
 	private JLabel status;
 	
 	// Izbire v menujih
@@ -42,7 +39,7 @@ public class MainFrame extends JFrame implements ActionListener {
 	/**
 	 * Ustvari novo glavno okno in prični igrati igro.
 	 */
-	public GlavnoOkno() {
+	public MainFrame() {
 		
 		this.setTitle("Backgammon");
 		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -51,43 +48,39 @@ public class MainFrame extends JFrame implements ActionListener {
 		// menu
 		JMenuBar menu_bar = new JMenuBar();
 		this.setJMenuBar(menu_bar);
-		// Nova igra
-		JMenu igra_menu = new JMenu("Nova igra");
-		menu_bar.add(igra_menu);
 
-
+		// new game
+		JMenu new_game_menu = new JMenu("Nova igra");
+		menu_bar.add(new_game_menu);
 		igraClovekRacunalnik = new JMenuItem("Človek – računalnik");
-		igra_menu.add(igraClovekRacunalnik);
+		new_game_menu.add(igraClovekRacunalnik);
 		igraClovekRacunalnik.addActionListener(this);
-		
 		igraRacunalnikClovek = new JMenuItem("Računalnik – človek");
-		igra_menu.add(igraRacunalnikClovek);
+		new_game_menu.add(igraRacunalnikClovek);
 		igraRacunalnikClovek.addActionListener(this);
-		
 		igraClovekClovek = new JMenuItem("Človek – človek");
-		igra_menu.add(igraClovekClovek);
+		new_game_menu.add(igraClovekClovek);
 		igraClovekClovek.addActionListener(this);
-		
 		igraRacunalnikRacunalnik = new JMenuItem("Računalnik – računalnik");
-		igra_menu.add(igraRacunalnikRacunalnik);
+		new_game_menu.add(igraRacunalnikRacunalnik);
 		igraRacunalnikRacunalnik.addActionListener(this);
 
-		//nastavitve
-		JMenu nastavitve_menu = new JMenu("Nastavitve");
-		menu_bar.add(nastavitve_menu);
+		//settings
+		JMenu settings_menu = new JMenu("Nastavitve");
+		menu_bar.add(settings_menu);
 
 		
 
-		// igralno polje
-		polje = new GamePanel();
+		// igralno gamePanel
+		gamePanel = new GamePanel();
 
-		GridBagConstraints polje_layout = new GridBagConstraints();
-		polje_layout.gridx = 0;
-		polje_layout.gridy = 0;
-		polje_layout.fill = GridBagConstraints.BOTH;
-		polje_layout.weightx = 1.0;
-		polje_layout.weighty = 1.0;
-		getContentPane().add(polje, polje_layout);
+		GridBagConstraints gamePanel_layout = new GridBagConstraints();
+		gamePanel_layout.gridx = 0;
+		gamePanel_layout.gridy = 0;
+		gamePanel_layout.fill = GridBagConstraints.BOTH;
+		gamePanel_layout.weightx = 1.0;
+		gamePanel_layout.weighty = 1.0;
+		getContentPane().add(gamePanel, gamePanel_layout);
 		
 		// statusna vrstica za sporočila
 		status = new JLabel();
@@ -107,58 +100,58 @@ public class MainFrame extends JFrame implements ActionListener {
 	
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		if (e.getSource() == igraClovekRacunalnik) {
-			Vodja.vrstaIgralca = new HashMap<Integer,VrstaIgralca>();
-			Vodja.vrstaIgralca.put(1, VrstaIgralca.C); 
-			Vodja.vrstaIgralca.put(-1, VrstaIgralca.R);
-			Vodja.igramoNovoIgro();
-		} else if (e.getSource() == igraRacunalnikClovek) {
-			Vodja.vrstaIgralca = new HashMap<Integer,VrstaIgralca>();
-			Vodja.vrstaIgralca.put(1, VrstaIgralca.R); 
-			Vodja.vrstaIgralca.put(-1, VrstaIgralca.C);
-			Vodja.igramoNovoIgro();
-		} else if (e.getSource() == igraClovekClovek) {
-			Vodja.vrstaIgralca = new HashMap<Integer,VrstaIgralca>();
-			Vodja.vrstaIgralca.put(1, VrstaIgralca.C); 
-			Vodja.vrstaIgralca.put(-1, VrstaIgralca.C);
-			Vodja.igramoNovoIgro();
-		} else if (e.getSource() == igraRacunalnikRacunalnik) {
-			Vodja.vrstaIgralca = new HashMap<Integer,VrstaIgralca>();
-			Vodja.vrstaIgralca.put(1, VrstaIgralca.R); 
-			Vodja.vrstaIgralca.put(-1, VrstaIgralca.R);
-			Vodja.igramoNovoIgro();
-		}
+	//	if (e.getSource() == igraClovekRacunalnik) {
+	//		Vodja.vrstaIgralca = new HashMap<Integer,VrstaIgralca>();
+	//		Vodja.vrstaIgralca.put(1, VrstaIgralca.C); 
+	//		Vodja.vrstaIgralca.put(-1, VrstaIgralca.R);
+	//		Vodja.igramoNovoIgro();
+	//	} else if (e.getSource() == igraRacunalnikClovek) {
+	//		Vodja.vrstaIgralca = new HashMap<Integer,VrstaIgralca>();
+	//		Vodja.vrstaIgralca.put(1, VrstaIgralca.R); 
+	//		Vodja.vrstaIgralca.put(-1, VrstaIgralca.C);
+	//		Vodja.igramoNovoIgro();
+	//	} else if (e.getSource() == igraClovekClovek) {
+	//		Vodja.vrstaIgralca = new HashMap<Integer,VrstaIgralca>();
+	//		Vodja.vrstaIgralca.put(1, VrstaIgralca.C); 
+	//		Vodja.vrstaIgralca.put(-1, VrstaIgralca.C);
+	//		Vodja.igramoNovoIgro();
+	//	} else if (e.getSource() == igraRacunalnikRacunalnik) {
+	//		Vodja.vrstaIgralca = new HashMap<Integer,VrstaIgralca>();
+	//		Vodja.vrstaIgralca.put(1, VrstaIgralca.R); 
+	//		Vodja.vrstaIgralca.put(-1, VrstaIgralca.R);
+	//		Vodja.igramoNovoIgro();
+	//	}
 	}
 
 	public void osveziGUI() {
-		if (Vodja.igra == null) {
-			status.setText("Igra ni v teku.");
-		}
-		else {
-			double stanje = Game.getGameEnded(Vodja.igra.board, Vodja.igra.igralec);
-			if (stanje == 0) {
-				String ime = "bel";
-				if (Vodja.igra.igralec == 1) ime = "črn";
-		 		status.setText("Na potezi je " + ime + 
-		 				" - " + Vodja.vrstaIgralca.get(Vodja.igra.igralec));
-			}
-			else if (stanje == -1 || stanje == 1) {
-				if (Vodja.igra.igralec == 1) {
-					status.setText("Zmagal je bel." + 
-					 		Vodja.vrstaIgralca.get(-1));
-				}
-				else {
-					status.setText("Zmagal je črn." + 
-							Vodja.vrstaIgralca.get(1));
-				}
-			}
-			else {
-				System.out.println(stanje);
-				status.setText("Neodločeno!");
-			}
-			
-		}
-		polje.repaint();
+	//	if (Vodja.igra == null) {
+	//		status.setText("Igra ni v teku.");
+	//	}
+	//	else {
+	//		double stanje = Game.getGameEnded(Vodja.igra.board, Vodja.igra.igralec);
+	//		if (stanje == 0) {
+	//			String ime = "bel";
+	//			if (Vodja.igra.igralec == 1) ime = "črn";
+	//	 		status.setText("Na potezi je " + ime + 
+	//	 				" - " + Vodja.vrstaIgralca.get(Vodja.igra.igralec));
+	//		}
+	//		else if (stanje == -1 || stanje == 1) {
+	//			if (Vodja.igra.igralec == 1) {
+	//				status.setText("Zmagal je bel." + 
+	//				 		Vodja.vrstaIgralca.get(-1));
+	//			}
+	//			else {
+	//				status.setText("Zmagal je črn." + 
+	//						Vodja.vrstaIgralca.get(1));
+	//			}
+	//		}
+	//		else {
+	//			System.out.println(stanje);
+	//			status.setText("Neodločeno!");
+	//		}
+	//		
+	//	}
+	//	gamePanel.repaint();
 	}
 	
 

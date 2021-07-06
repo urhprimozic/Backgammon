@@ -1,3 +1,6 @@
+//props redundant? 
+//TODO REMOVE
+
 package utils;
 
 public class Coordinates {

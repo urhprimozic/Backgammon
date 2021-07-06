@@ -2,9 +2,7 @@ package rules;
 
 import java.util.List;
 
-import utils.Coordinates;
 import utils.Pair;
-import utils.PlayerColor;
 /**
  * @variables int
  * 
@@ -120,4 +118,5 @@ public class Board {
         }
         // we returned True in the ok case
         return false;
+    }
 }
