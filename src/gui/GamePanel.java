@@ -34,14 +34,14 @@ public class GamePanel extends JPanel implements MouseListener {
 	private final static Color COLOR_W = Color.WHITE;
 	private final static Color OUTLINE_B = Color.DARK_GRAY;
 	private final static Color OUTLINE_W = Color.LIGHT_GRAY;
-	private final static Color COLOR_BACKGROUND = new Color(27, 69, 24);//Color.GREEN;
-	private final static Color COLOR_WOOD =new Color(138, 99, 55);
+	private final static Color COLOR_BACKGROUND = new Color(27, 69, 24);// Color.GREEN;
+	private final static Color COLOR_WOOD = new Color(138, 99, 55);
 	private final static Color OUTLINE = Color.BLACK;
-	private final static Color COLOR_TRIANGLE_WHITE = new Color(204,30,9);
-	private final static Color COLOR_TRIANGLE_BLACK = new Color(221,222,171);
+	private final static Color COLOR_TRIANGLE_WHITE = new Color(204, 30, 9);
+	private final static Color COLOR_TRIANGLE_BLACK = new Color(221, 222, 171);
 
-	// MARGINS
-	private final static double MARGIN_TRIANGLES = 8 / 1024;// Margin between triangles and the wooden box
+	// MARGINS TODO - REMOVE because margins look ugly
+	private final static double MARGIN_TRIANGLES = 0.; /// 8. / 1024.;// Margin between triangles and the wooden box
 
 	public GamePanel() {
 		setBackground(COLOR_BACKGROUND);
@@ -85,42 +85,46 @@ public class GamePanel extends JPanel implements MouseListener {
 				(int) Math.round(GREEN_HEIGHT * getHeight()));
 		g2.drawRect(woodSize(), woodSize(), (int) Math.round(GREEN_WIDTH * getWidth()),
 				(int) Math.round(GREEN_HEIGHT * getHeight()));
-		g2.fillRect(woodSize()*3 + (int) Math.round(GREEN_WIDTH * getWidth()), woodSize(), (int) Math.round(GREEN_WIDTH * getWidth()),
-				(int) Math.round(GREEN_HEIGHT * getHeight()));
-		g2.drawRect(woodSize()*3 + (int) Math.round(GREEN_WIDTH * getWidth()), woodSize(), (int) Math.round(GREEN_WIDTH * getWidth()),
-				(int) Math.round(GREEN_HEIGHT * getHeight()));
-		
-		
+		g2.fillRect(woodSize() * 3 + (int) Math.round(GREEN_WIDTH * getWidth()), woodSize(),
+				(int) Math.round(GREEN_WIDTH * getWidth()), (int) Math.round(GREEN_HEIGHT * getHeight()));
+		g2.drawRect(woodSize() * 3 + (int) Math.round(GREEN_WIDTH * getWidth()), woodSize(),
+				(int) Math.round(GREEN_WIDTH * getWidth()), (int) Math.round(GREEN_HEIGHT * getHeight()));
 
-		//if (igra != null) {
-		//	g2.setStroke(new BasicStroke((float) (w * SIRINA_CRTE)));
-//
-		//	// polja
-		//	for (int vrstica = 0; vrstica < igra.N; vrstica++) {
-		//		for (int stolpec = 0; stolpec < igra.N; stolpec++) {
-		//			int p = Vodja.igra.board.plosca[vrstica][stolpec];
-		//			if (p == 0) {
-		//				continue;
-		//			} else if (p == 1) {
-		//				g2.setColor(barvaC);
-		//			} else {
-		//				g2.setColor(barvaB);
-		//			}
-		//			g2.fillOval((int) (stolpec * w + w * (1 - VELIKOST_ZETONA) / 2 + (SIRINA_CRTE)),
-		//					(int) (vrstica * w + w * (1 - VELIKOST_ZETONA) / 2 + (SIRINA_CRTE)),
-		//					(int) (w * VELIKOST_ZETONA), (int) (w * VELIKOST_ZETONA));
-		//		}
-		//	}
-//
-		//	// mreža
-		//	g2.setColor(barvaCrte);
-		//	for (int vrstica = 1; vrstica < igra.N; vrstica++) {
-		//		g2.drawLine(0, vrstica * (int) w, igra.N * (int) w, vrstica * (int) w);
-		//	}
-		//	for (int stolpec = 1; stolpec < igra.N; stolpec++) {
-		//		g2.drawLine(stolpec * (int) w, 0, stolpec * (int) w, igra.N * (int) w);
-		//	}
-		//}
+		// triangles
+		// int triangle_w = (int) ((Math.round(GREEN_WIDTH - MARGIN_TRIANGLES) *
+		// getWidth()) / 6);
+		// int triangle_w = (int) Math.round( TRIANGLE_WIDTH * getWidth());
+		int triangle_w = (int) Math.round(Math.round(GREEN_WIDTH * getWidth()) / 6.);
+
+		for (int i = 12; i >= 1; i--) {
+
+			int x0 = (int) MARGIN_TRIANGLES * getWidth() + woodSize() + (12 - i) * triangle_w;
+			if (i <= 6)
+				x0 = (int) MARGIN_TRIANGLES * getWidth() + woodSize() * 3 + (int) Math.round(GREEN_WIDTH * getWidth())
+						+ (int) (Math.round(GREEN_WIDTH - MARGIN_TRIANGLES) * getWidth()) + (6 - i) * triangle_w;
+
+			// upper triangles
+			if (i % 2 == 0)
+				g2.setColor(COLOR_TRIANGLE_WHITE);
+			else
+				g2.setColor(COLOR_TRIANGLE_BLACK);
+			// TODO - should the border be of a different color?
+			g2.fillPolygon(new int[] { x0, x0 + triangle_w, (int) ((2 * x0 + triangle_w) / 2) }, new int[] {
+					(int) woodSize(), (int) woodSize(), (int) woodSize() + (int) (TRIANGLE_HEIGHT * getHeight()) }, 3);
+			g2.drawPolygon(new int[] { x0, x0 + triangle_w, (int) ((2 * x0 + triangle_w) / 2) }, new int[] {
+					(int) woodSize(), (int) woodSize(), (int) woodSize() + (int) (TRIANGLE_HEIGHT * getHeight()) }, 3);
+
+			// lower triangles
+			if (i % 2 == 1)
+				g2.setColor(COLOR_TRIANGLE_WHITE);
+			else
+				g2.setColor(COLOR_TRIANGLE_BLACK);
+			// TODO - should the border be of a different color?
+			g2.fillPolygon(new int[] { x0, x0 + triangle_w, (int) ((2 * x0 + triangle_w) / 2) }, new int[] {
+					(int) getHeight() - woodSize(), (int) getHeight() - woodSize(), (int) getHeight() - woodSize() - (int) (TRIANGLE_HEIGHT * getHeight()) }, 3);
+			g2.drawPolygon(new int[] { x0, x0 + triangle_w, (int) ((2 * x0 + triangle_w) / 2) }, new int[] {
+					(int) getHeight() - woodSize(), (int) getHeight() - woodSize(), (int) getHeight() - woodSize() - (int) (TRIANGLE_HEIGHT * getHeight()) }, 3);
+		}
 
 	}
 
