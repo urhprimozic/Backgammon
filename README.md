@@ -18,3 +18,5 @@ Code is inside `src`.  Run `src/Backgammon.java` for the game. Seperate packages
 | `src/utils` | Stuff used everywhere | splošno |
 |`src/leader/Game.java`|Game definitions , suitable for MCTS|Game.java|
 |`src/leader/GameVisible.java`|Game definitions suitalbe for updating gui|Igra.java|
+
+![Backgammon in action](https://github.com/urhprimozic/Backgammon/blob/main/thumb.png)
