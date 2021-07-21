@@ -12,9 +12,9 @@ public class Board {
      * int[24][2] board
      * Array of 24 size 2 arrays (pairs) 
      * @usage
-     * board[i][0] - number of checkers
+     * {@code board[i][0]} - number of checkers
      * 
-     * board[i][1] - 1 for white, 0 for empty, -1 for black
+     * {@code board[i][1]} - {@code 1} for white, {@code 0} for empty, {@code -1} for black
      * @representation
      * i-th pair represents (i+1)-th triangle of the board. 
      * Since a triangle can not be shared between two different colors

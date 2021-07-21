@@ -12,7 +12,7 @@ public class Leader {
   public static GameVisible gameVisible;// = new GameVisible();
   public static MainFrame frame;
 
-  public static boolean clovekNaVrsti = false;
+  public static boolean humanRound = true;
 
   //public static Inteligenca comp1;
   //public static Inteligenca comp2;

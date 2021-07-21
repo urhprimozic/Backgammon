@@ -14,8 +14,16 @@ public class GameVisible {
 		board = new Board();
 		player = 1;
 	}
-
+	/**
+	 * Plays a move, if its possible. False otherwise
+	 * @param move move to play
+	 * @return true, if move is possible. Otherwise false
+	 */
 	public boolean playMove(Pair<Integer, Integer> move) {
-		return board.executeMove(move);
+		if (board.executeMove(move)) {
+			player *= -1;
+			return true;
+		}
+		return false;
 	}
 }

@@ -7,6 +7,7 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 
 import javax.swing.JPanel;
 
@@ -18,7 +19,7 @@ import rules.GameVisible;
  * Rectangular area with the game field and pieces.
  */
 @SuppressWarnings("serial")
-public class GamePanel extends JPanel implements MouseListener {
+public class GamePanel extends JPanel implements MouseListener,MouseMotionListener {
 	// Constants for gui
 	// sizes
 	private final static double CHIP_SIZE = 75. / 1024.;
@@ -26,13 +27,13 @@ public class GamePanel extends JPanel implements MouseListener {
 	private final static double WOOD_HEIGHT = 36. / 878.;
 	private final static double TRIANGLE_WIDTH = 70. / 1024.;
 	
-	//private final static double TRIANGLE_HEIGHT = 184. / 1024.;
+	// private final static double TRIANGLE_HEIGHT = 184. / 1024.;
 	private final static double TRIANGLE_HEIGHT = CHIP_SIZE * 5;
 	
 	private final static double LINE_SIZE = 2;
 	private final static double GREEN_HEIGHT = 805. / 878.;
 	private final static double GREEN_WIDTH = 439. / 1024.;
-
+	
 	/// colors
 	private final static Color COLOR_B = Color.BLACK;
 	private final static Color COLOR_W = Color.WHITE;
@@ -43,13 +44,39 @@ public class GamePanel extends JPanel implements MouseListener {
 	private final static Color COLOR_OUTLINE = Color.BLACK;
 	private final static Color COLOR_TRIANGLE_WHITE = new Color(204, 30, 9);
 	private final static Color COLOR_TRIANGLE_BLACK = new Color(221, 222, 171);
-
+	
 	// MARGINS TODO - REMOVE because margins look ugly
 	private final static double MARGIN_TRIANGLES = 0.; /// 8. / 1024.;// Margin between triangles and the wooden box
+	private final static int CLICK_MARGIN = 0;
+
+	/**
+	 * True, if one chip is being moved around
+	 */
+	private boolean activeChip;
+	/**
+	 * Index of the triagnle, from which we took an active chip
+	 */
+	private int activeChipIndex;
+	private int activeChipX;
+	private int activeChipY;
+	private int activeChipDx;
+	private int activeChipDy;
+	private int activeChipColor;
 
 	public GamePanel() {
 		setBackground(COLOR_BACKGROUND);
+
+		// all the chips are inactive in the beginning
 		this.addMouseListener(this);
+		this.addMouseMotionListener(this);
+		//this.addMouseMotionListener(this);
+		activeChip = false;
+		activeChipIndex = -1;
+		activeChipX = 0;
+		activeChipY = 0;
+		activeChipDx = 0;
+		activeChipDx = 0;
+		activeChipColor = 0;
 	}
 
 	/**
@@ -85,7 +112,7 @@ public class GamePanel extends JPanel implements MouseListener {
 
 		int triangle_w = (int) Math.round(Math.round(GREEN_WIDTH * getWidth()) / 6.);
 		int j = i + 1;
-		if (i + 1 >= 13) { 
+		if (i + 1 >= 13) {
 			j -= 12;
 			// top lone of triangles - from 13 to 24
 			if (j <= 6)
@@ -94,20 +121,25 @@ public class GamePanel extends JPanel implements MouseListener {
 				x = (int) (MARGIN_TRIANGLES * getWidth() + 3 * woodSize() + (int) Math.round(GREEN_WIDTH * getWidth())
 						+ (j - 7) * triangle_w);
 
-		} else {//bottom line of trangles
-			int k = 13 - j;
+		} else {// bottom line of trangles
 			if (j <= 6)
-				x = (int) (MARGIN_TRIANGLES * getWidth() + 3 * woodSize() + Math.round(GREEN_WIDTH * getWidth()) + (6-j) * triangle_w);	
-			//x = (int) (MARGIN_TRIANGLES * getWidth() + woodSize() + (k - 1) * triangle_w);
+				x = (int) (MARGIN_TRIANGLES * getWidth() + 3 * woodSize() + Math.round(GREEN_WIDTH * getWidth())
+						+ (6 - j) * triangle_w);
+			// x = (int) (MARGIN_TRIANGLES * getWidth() + woodSize() + (k - 1) *
+			// triangle_w);
 			else
-				x = (int) (MARGIN_TRIANGLES * getWidth() + woodSize() + (12 - j)  * triangle_w);
-			//				x = (int) (MARGIN_TRIANGLES * getWidth() + 3 * woodSize() + (int) Math.round(GREEN_WIDTH * getWidth())
-//						+ (k - 7) * triangle_w);
-			//if (j <= 6)
-			//	x = (int) (MARGIN_TRIANGLES * getWidth() + woodSize() + (13 - j) * triangle_w);
-			//else
-			//	x = (int) (MARGIN_TRIANGLES * getWidth() + 3 * woodSize() + (int) Math.round(GREEN_WIDTH * getWidth())
-			//			+ (int) (Math.round(GREEN_WIDTH - MARGIN_TRIANGLES) * getWidth()) + (5 - j) * triangle_w);
+				x = (int) (MARGIN_TRIANGLES * getWidth() + woodSize() + (12 - j) * triangle_w);
+			// x = (int) (MARGIN_TRIANGLES * getWidth() + 3 * woodSize() + (int)
+			// Math.round(GREEN_WIDTH * getWidth())
+			// + (k - 7) * triangle_w);
+			// if (j <= 6)
+			// x = (int) (MARGIN_TRIANGLES * getWidth() + woodSize() + (13 - j) *
+			// triangle_w);
+			// else
+			// x = (int) (MARGIN_TRIANGLES * getWidth() + 3 * woodSize() + (int)
+			// Math.round(GREEN_WIDTH * getWidth())
+			// + (int) (Math.round(GREEN_WIDTH - MARGIN_TRIANGLES) * getWidth()) + (5 - j) *
+			// triangle_w);
 		}
 
 		ans[0] = x;
@@ -195,9 +227,22 @@ public class GamePanel extends JPanel implements MouseListener {
 			// ----------------------------------------------------------
 			// CHIPS
 			// ----------------------------------------------------------
-			System.out.println("tewstbefore");
+			// active chip
+			if (activeChip) {
+				if (activeChipColor == 1)
+					g2.setColor(COLOR_W);
+				else
+					g2.setColor(COLOR_B);
+				g2.fillOval(activeChipX, activeChipY, chipSize(), chipSize());
+				g2.setColor(COLOR_OUTLINE);
+				g2.drawOval(activeChipX, activeChipY, chipSize(), chipSize());
+			}
+			// other chips
 			for (int i = 0; i < 24; i++) {
 				int num = gameVisible.board.board[i][0];
+				// we must draw one chip less if we moved one
+				if (i == activeChipIndex && activeChip)
+					num -= 1;
 				if (num <= 0)
 					continue;
 				int color = gameVisible.board.board[i][1];
@@ -218,9 +263,7 @@ public class GamePanel extends JPanel implements MouseListener {
 					else
 						y -= j * chipSize();
 
-					System.out.println("x: " + String.valueOf(x) + "  y: " + String.valueOf(y) + "chipSize: "
-							+ String.valueOf(chipSize()));
-
+			
 					// coloring
 					if (color == 1)
 						g2.setColor(COLOR_W);
@@ -233,34 +276,74 @@ public class GamePanel extends JPanel implements MouseListener {
 				}
 
 			}
+			this.repaint();
 		} else
+			// TODO ne tega u log pisat k lah da kod ni tosd kul
 			System.out.println("Nč nam risu k nč ni za risat bučko");
 	}
 
 	@Override
-	public void mouseClicked(MouseEvent e) {
-		// Igra igra = Vodja.igra;
-		// if(igra != null){
-		// if (Vodja.clovekNaVrsti) {
-		// int x = e.getX();
-		// int y = e.getY();
-		// int w = (int)(squareWidth());
-		// int i = x / w ;
-		// double di = (x % w) / squareWidth() ;
-		// int j = y / w ;
-		// double dj = (y % w) / squareWidth() ;
-		// if (0 <= i && i < igra.N &&
-		// 0.5 * SIRINA_CRTE < di && di < 1.0 - 0.5 * SIRINA_CRTE &&
-		// 0 <= j && j < igra.N &&
-		// 0.5 * SIRINA_CRTE < dj && dj < 1.0 - 0.5 * SIRINA_CRTE) {
-		// Vodja.igrajClovekovoPotezo (new Koordinati(j, i));
-		// }
-		// }
-		// }
+	public void mousePressed(MouseEvent e) {
+		System.out.println("mouse pressed");
+		GameVisible gameVisible = Leader.gameVisible;
+		if (gameVisible != null) {
+			if (Leader.humanRound) {
+				int x = e.getX();
+				int y = e.getY();
+				// checks all the top chekcers for the click
+				boolean Misclick = true;
+				System.out.println("\tNa vrsti: " + Leader.gameVisible.player);
+				for (int i = 0; i < 24; i++) {// cheks all the triangels
+					// num of chips and colors in the triangle
+					int num = gameVisible.board.board[i][0];
+					if (num <= 0)
+						continue;
+					int color = gameVisible.board.board[i][1];
+					if (color == 0)
+						continue;
+
+					// calculate the position oh the outside chip
+					// (x0, y0) ....... upper left corner coordinates of the chip
+					int triangle_w = (int) Math.round(Math.round(GREEN_WIDTH * getWidth()) / 6.);
+					int x0 = triangeCoordinates(i)[0] + (int) Math.round((triangle_w - chipSize()) / 2.);
+					int y0 = triangeCoordinates(i)[1];
+					if (i + 1 >= 13)
+						y0 += (num - 1) * chipSize();
+					else
+						y0 -= num * chipSize();
+
+					// if the chip was clicked:
+					int dw = chipSize() / 2;
+					int r = dw + CLICK_MARGIN;// click margin is a bad idea with the current setup
+					if ((x0 + dw - x) * (x0 + dw - x) + (y0 + dw - y) * (y0 + dw - y) <= r*r){
+						if (color != Leader.gameVisible.player) {
+							System.out.println("Misclick - tried to move a different coin\n\tTODO ukren neki");
+						} else {
+							System.out.println("Top chip selected!");
+							activeChip = true;
+							activeChipColor = color;
+							activeChipIndex = i;
+							activeChipDx = x0 - x;
+							activeChipDy = y0 - y;
+							activeChipX = x0;// = x + dx
+							activeChipY = y0;// = y + dy
+						}
+					}
+
+						
+				}
+
+				if (Misclick) {
+					// This kind of click does nothing.
+					System.out.println("Misclick on (" + x + ", " + y + ")");
+					// System.out.println("");
+				}
+			}
+		}
 	}
 
 	@Override
-	public void mousePressed(MouseEvent e) {
+	public void mouseClicked(MouseEvent e) {
 	}
 
 	@Override
@@ -275,4 +358,22 @@ public class GamePanel extends JPanel implements MouseListener {
 	public void mouseExited(MouseEvent e) {
 	}
 
+	@Override
+	public void mouseDragged(MouseEvent e) {
+		int x = e.getX();
+		int y = e.getY();
+		GameVisible gameVisible = Leader.gameVisible;
+		if (gameVisible != null) {
+			if (Leader.humanRound && activeChip) {
+				activeChipX = x + activeChipDx;
+				activeChipY = y + activeChipDy;
+			}
+		}
+	}
+
+	@Override
+	public void mouseMoved(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
 }
