@@ -1,10 +1,40 @@
 package leader;
 
+import java.util.Map;
+
 import gui.MainFrame;
-import rules.Game;
+import rules.GameVisible;
 
 public class Leader {
-    public static Game game;
-    public static MainFrame frame;
-    //big TODO
+
+  public static Map<Integer, PlayerType> playerType;
+
+  public static GameVisible gameVisible;// = new GameVisible();
+  public static MainFrame frame;
+
+  public static boolean clovekNaVrsti = false;
+
+  //public static Inteligenca comp1;
+  //public static Inteligenca comp2;
+
+  public static void newGame() {
+    gameVisible = new GameVisible();
+    
+    //
+    // if (vrstaIgralca.get(1) == VrstaIgralca.R) {
+    // comp1 = new Inteligenca();
+    // }
+    // else {
+    // comp1 = null;
+    // }
+    //
+    // if (vrstaIgralca.get(-1) == VrstaIgralca.R) {
+    // comp2 = new Inteligenca();
+    // }
+    // else {
+    // comp2 = null;
+    // }
+    //
+    // igramo();
+  }
 }

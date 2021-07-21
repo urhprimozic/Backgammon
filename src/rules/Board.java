@@ -12,9 +12,9 @@ public class Board {
      * int[24][2] board
      * Array of 24 size 2 arrays (pairs) 
      * @usage
-     * board[i][0] - number of checkers
+     * board[i][0] : number of checkers
      * 
-     * board[i][1] - 1 for white, 0 for empty, -1 for black
+     * board[i][1] : 1 for white, 0 for empty, -1 for black
      * @representation
      * i-th pair represents i-th triangle of the board. 
      * Since a triangle can not be shared between two different colors
@@ -29,29 +29,29 @@ public class Board {
     public Board(){
         board = new int[24][2];
         //White coins
-        board[1][0] = 2;//number of coins
-        board[1][1] = 1;//color - 1=white, -1=Black
+        board[0][0] = 2;//number of coins
+        board[0][1] = -1;//color - 1=white, -1=Black
+        
+        board[11][0] = 5;//number of coins
+        board[11][1] = -1;//color - 1=white, -1=Black
+        
+        board[16][0] = 3;//number of coins
+        board[16][1] = -1;//color - 1=white, -1=Black
+        
+        board[18][0] = 5;//number of coins
+        board[18][1] = -1;//color - 1=white, -1=Black
+        //Black coins
+        board[23][0] = 2;//number of coins
+        board[23][1] = 1;//color - 1=white, -1=Black
         
         board[12][0] = 5;//number of coins
         board[12][1] = 1;//color - 1=white, -1=Black
         
-        board[17][0] = 3;//number of coins
-        board[17][1] = 1;//color - 1=white, -1=Black
+        board[7][0] = 3;//number of coins
+        board[7][1] = 1;//color - 1=white, -1=Black
         
-        board[19][0] = 5;//number of coins
-        board[19][1] = 1;//color - 1=white, -1=Black
-        //Black coins
-        board[24][0] = 2;//number of coins
-        board[24][1] = -1;//color - 1=white, -1=Black
-        
-        board[13][0] = 5;//number of coins
-        board[13][1] = -1;//color - 1=white, -1=Black
-        
-        board[8][0] = 3;//number of coins
-        board[8][1] = -1;//color - 1=white, -1=Black
-        
-        board[6][0] = 5;//number of coins
-        board[6][1] = -1;//color - 1=white, -1=Black
+        board[5][0] = 5;//number of coins
+        board[5][1] = 1;//color - 1=white, -1=Black
 
 
     }
