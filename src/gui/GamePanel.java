@@ -13,6 +13,7 @@ import javax.swing.JPanel;
 
 import leader.Leader;
 import rules.GameVisible;
+import utils.Pair;
 //import rules.Board;
 
 /**
@@ -62,7 +63,8 @@ public class GamePanel extends JPanel implements MouseListener,MouseMotionListen
 	private int activeChipDx;
 	private int activeChipDy;
 	private int activeChipColor;
-
+	
+	
 	public GamePanel() {
 		setBackground(COLOR_BACKGROUND);
 
@@ -71,12 +73,6 @@ public class GamePanel extends JPanel implements MouseListener,MouseMotionListen
 		this.addMouseMotionListener(this);
 		//this.addMouseMotionListener(this);
 		activeChip = false;
-		activeChipIndex = -1;
-		activeChipX = 0;
-		activeChipY = 0;
-		activeChipDx = 0;
-		activeChipDx = 0;
-		activeChipColor = 0;
 	}
 
 	/**
@@ -101,8 +97,7 @@ public class GamePanel extends JPanel implements MouseListener,MouseMotionListen
 	 * @return {x, y} coordinates of i-th triangle board[i][]. Coordinates of left
 	 *         corner (upper or lower)
 	 */
-	private int[] triangeCoordinates(int i) {
-		int[] ans = new int[2];
+	private int[] triangleCoordinates(int i) {
 		int x = 0, y = 0;
 
 		if (i + 1 >= 13)
@@ -141,10 +136,8 @@ public class GamePanel extends JPanel implements MouseListener,MouseMotionListen
 			// + (int) (Math.round(GREEN_WIDTH - MARGIN_TRIANGLES) * getWidth()) + (5 - j) *
 			// triangle_w);
 		}
-
-		ans[0] = x;
-		ans[1] = y;
-		return ans;
+		
+		return new int[]{x,y};
 	}
 
 	@Override
@@ -255,8 +248,8 @@ public class GamePanel extends JPanel implements MouseListener,MouseMotionListen
 
 				// drawing chips
 				for (int j = 1; j <= num; j++) {
-					int x = triangeCoordinates(i)[0] + (int) Math.round((triangle_w - chipSize()) / 2.);
-					int y = triangeCoordinates(i)[1];
+					int x = triangleCoordinates(i)[0] + (int) Math.round((triangle_w - chipSize()) / 2.);
+					int y = triangleCoordinates(i)[1];
 
 					if (i + 1 >= 13)
 						y += (j - 1) * chipSize();
@@ -279,20 +272,20 @@ public class GamePanel extends JPanel implements MouseListener,MouseMotionListen
 			this.repaint();
 		} else
 			// TODO ne tega u log pisat k lah da kod ni tosd kul
-			System.out.println("Nč nam risu k nč ni za risat bučko");
+			System.out.println("GUI: Nč nam risu k nč ni za risat bučko");
 	}
 
 	@Override
 	public void mousePressed(MouseEvent e) {
-		System.out.println("mouse pressed");
+		System.out.println("GUI: mouse pressed");
 		GameVisible gameVisible = Leader.gameVisible;
 		if (gameVisible != null) {
 			if (Leader.humanRound) {
 				int x = e.getX();
 				int y = e.getY();
 				// checks all the top chekcers for the click
-				boolean Misclick = true;
-				System.out.println("\tNa vrsti: " + Leader.gameVisible.player);
+				boolean misclick = true;
+				System.out.println("GUI: \tNa vrsti: " + Leader.gameVisible.player);
 				for (int i = 0; i < 24; i++) {// cheks all the triangels
 					// num of chips and colors in the triangle
 					int num = gameVisible.board.board[i][0];
@@ -305,8 +298,8 @@ public class GamePanel extends JPanel implements MouseListener,MouseMotionListen
 					// calculate the position oh the outside chip
 					// (x0, y0) ....... upper left corner coordinates of the chip
 					int triangle_w = (int) Math.round(Math.round(GREEN_WIDTH * getWidth()) / 6.);
-					int x0 = triangeCoordinates(i)[0] + (int) Math.round((triangle_w - chipSize()) / 2.);
-					int y0 = triangeCoordinates(i)[1];
+					int x0 = triangleCoordinates(i)[0] + (int) Math.round((triangle_w - chipSize()) / 2.);
+					int y0 = triangleCoordinates(i)[1];
 					if (i + 1 >= 13)
 						y0 += (num - 1) * chipSize();
 					else
@@ -317,9 +310,10 @@ public class GamePanel extends JPanel implements MouseListener,MouseMotionListen
 					int r = dw + CLICK_MARGIN;// click margin is a bad idea with the current setup
 					if ((x0 + dw - x) * (x0 + dw - x) + (y0 + dw - y) * (y0 + dw - y) <= r*r){
 						if (color != Leader.gameVisible.player) {
-							System.out.println("Misclick - tried to move a different coin\n\tTODO ukren neki");
+							System.out.println("GUI: Misclick - tried to move a different chip\n\tTODO ukren neki");
 						} else {
-							System.out.println("Top chip selected!");
+							System.out.println("GUI: Top chip selected!");
+							misclick = false;
 							activeChip = true;
 							activeChipColor = color;
 							activeChipIndex = i;
@@ -333,9 +327,9 @@ public class GamePanel extends JPanel implements MouseListener,MouseMotionListen
 						
 				}
 
-				if (Misclick) {
+				if (misclick) {
 					// This kind of click does nothing.
-					System.out.println("Misclick on (" + x + ", " + y + ")");
+					System.out.println("GUI: Misclick on (" + x + ", " + y + ")");
 					// System.out.println("");
 				}
 			}
@@ -348,6 +342,46 @@ public class GamePanel extends JPanel implements MouseListener,MouseMotionListen
 
 	@Override
 	public void mouseReleased(MouseEvent e) {
+		int x = e.getX();
+		int y = e.getY();
+		GameVisible gameVisible = Leader.gameVisible;
+		if (gameVisible != null && activeChip) {
+			activeChip = false;
+			// Released on the wooden part
+			if ((x < triangleCoordinates(5)[0] && x > triangleCoordinates(6)[0] + (TRIANGLE_WIDTH * getWidth())) || // wooden middle column
+				(x < triangleCoordinates(11)[0]) || // wooden left column
+				(x > triangleCoordinates(0)[0]) || // wooden right column
+				(y < triangleCoordinates(23)[1]) || // wooden top row
+				(y > triangleCoordinates(0)[1])) // wooden bottom row
+			{
+				System.out.println("GUI: Not released on a triangle");
+			}
+			// Indicies 0 to 11
+			else if (y > (1 - TRIANGLE_HEIGHT) * getHeight() - woodSize()) {
+				int i = 11;
+				while (x > triangleCoordinates(i - 1)[0] && i >= 1) {
+					--i;
+				}
+				boolean success = gameVisible.playMove(new Pair<Integer, Integer>(activeChipIndex, i));
+				if (success) {
+					System.out.println("GUI: Moved chip from triangle " + activeChipIndex + " to triangle " + i);
+				}
+			}
+			// Indicies 12 to 23
+			else if (y < TRIANGLE_HEIGHT * getHeight() + woodSize()) {
+				int i = 12;
+				while (x > triangleCoordinates(i + 1)[0] && i <= 22) {
+					++i;
+				}
+				boolean success = gameVisible.playMove(new Pair<Integer, Integer>(activeChipIndex, i));
+				if (success) {
+					System.out.println("GUI: Moved chip from triangle " + activeChipIndex + " to triangle " + i);
+				}
+			}
+			else {
+				System.out.println("GUI: Not released on a triangle");
+			}
+		}
 	}
 
 	@Override
