@@ -3,6 +3,7 @@ package gui;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.event.MouseEvent;
@@ -45,6 +46,9 @@ public class GamePanel extends JPanel implements MouseListener,MouseMotionListen
 	private final static Color COLOR_OUTLINE = Color.BLACK;
 	private final static Color COLOR_TRIANGLE_WHITE = new Color(204, 30, 9);
 	private final static Color COLOR_TRIANGLE_BLACK = new Color(221, 222, 171);
+	private final static Color TEXT_B = Color.BLACK;
+	private final static Color TEXT_W = Color.WHITE;
+	
 	
 	// MARGINS TODO - REMOVE because margins look ugly
 	private final static double MARGIN_TRIANGLES = 0.; /// 8. / 1024.;// Margin between triangles and the wooden box
@@ -77,7 +81,7 @@ public class GamePanel extends JPanel implements MouseListener,MouseMotionListen
 
 	/**
 	 * 
-	 * @return Chip 2*radius on a current widnow
+	 * @return Chip diameter on a current widnow
 	 */
 	private int chipSize() {
 		return (int) (Math.round(Math.min(getWidth(), getHeight()) * CHIP_SIZE));
@@ -85,10 +89,18 @@ public class GamePanel extends JPanel implements MouseListener,MouseMotionListen
 
 	/**
 	 * 
-	 * @return Size in pixels of wooden box surrounding the board.
+	 * @return {width, height} size of the wooden border in pixels
 	 */
-	private int woodSize() {
-		return (int) Math.round(Math.min(((double) getWidth()) * WOOD_WIDTH, ((double) getHeight()) * WOOD_HEIGHT));
+	private int[] woodSize() {
+		return new int[] {(int) (getWidth() * (1 - 2 * GREEN_WIDTH)) / 4, (int) (getHeight() * (1 - GREEN_HEIGHT)) / 2};
+	}
+	
+	/**
+	 * 
+	 * @return font size in pixels
+	 */
+	private int fontSize() {
+		return (int) (chipSize() / 1.5);
 	}
 
 	/**
@@ -101,9 +113,9 @@ public class GamePanel extends JPanel implements MouseListener,MouseMotionListen
 		int x = 0, y = 0;
 
 		if (i + 1 >= 13)
-			y = woodSize();
+			y = woodSize()[1];
 		else
-			y = getHeight() - woodSize();
+			y = getHeight() - woodSize()[1];
 
 		int triangle_w = (int) Math.round(Math.round(GREEN_WIDTH * getWidth()) / 6.);
 		int j = i + 1;
@@ -111,19 +123,19 @@ public class GamePanel extends JPanel implements MouseListener,MouseMotionListen
 			j -= 12;
 			// top lone of triangles - from 13 to 24
 			if (j <= 6)
-				x = (int) (MARGIN_TRIANGLES * getWidth() + woodSize() + (j - 1) * triangle_w);
+				x = (int) (MARGIN_TRIANGLES * getWidth() + woodSize()[0] + (j - 1) * triangle_w);
 			else
-				x = (int) (MARGIN_TRIANGLES * getWidth() + 3 * woodSize() + (int) Math.round(GREEN_WIDTH * getWidth())
+				x = (int) (MARGIN_TRIANGLES * getWidth() + 3 * woodSize()[0] + (int) Math.round(GREEN_WIDTH * getWidth())
 						+ (j - 7) * triangle_w);
 
 		} else {// bottom line of trangles
 			if (j <= 6)
-				x = (int) (MARGIN_TRIANGLES * getWidth() + 3 * woodSize() + Math.round(GREEN_WIDTH * getWidth())
+				x = (int) (MARGIN_TRIANGLES * getWidth() + 3 * woodSize()[0] + Math.round(GREEN_WIDTH * getWidth())
 						+ (6 - j) * triangle_w);
 			// x = (int) (MARGIN_TRIANGLES * getWidth() + woodSize() + (k - 1) *
 			// triangle_w);
 			else
-				x = (int) (MARGIN_TRIANGLES * getWidth() + woodSize() + (12 - j) * triangle_w);
+				x = (int) (MARGIN_TRIANGLES * getWidth() + woodSize()[0] + (12 - j) * triangle_w);
 			// x = (int) (MARGIN_TRIANGLES * getWidth() + 3 * woodSize() + (int)
 			// Math.round(GREEN_WIDTH * getWidth())
 			// + (k - 7) * triangle_w);
@@ -163,13 +175,13 @@ public class GamePanel extends JPanel implements MouseListener,MouseMotionListen
 			g2.drawRect(0, 0, getWidth(), getHeight());
 			// green background
 			g2.setColor(COLOR_BACKGROUND);
-			g2.fillRect(woodSize(), woodSize(), (int) Math.round(GREEN_WIDTH * getWidth()),
+			g2.fillRect(woodSize()[0], woodSize()[1], (int) Math.round(GREEN_WIDTH * getWidth()),
 					(int) Math.round(GREEN_HEIGHT * getHeight()));
-			g2.drawRect(woodSize(), woodSize(), (int) Math.round(GREEN_WIDTH * getWidth()),
+			g2.drawRect(woodSize()[0], woodSize()[1], (int) Math.round(GREEN_WIDTH * getWidth()),
 					(int) Math.round(GREEN_HEIGHT * getHeight()));
-			g2.fillRect(woodSize() * 3 + (int) Math.round(GREEN_WIDTH * getWidth()), woodSize(),
+			g2.fillRect(woodSize()[0] * 3 + (int) Math.round(GREEN_WIDTH * getWidth()), woodSize()[1],
 					(int) Math.round(GREEN_WIDTH * getWidth()), (int) Math.round(GREEN_HEIGHT * getHeight()));
-			g2.drawRect(woodSize() * 3 + (int) Math.round(GREEN_WIDTH * getWidth()), woodSize(),
+			g2.drawRect(woodSize()[0] * 3 + (int) Math.round(GREEN_WIDTH * getWidth()), woodSize()[1],
 					(int) Math.round(GREEN_WIDTH * getWidth()), (int) Math.round(GREEN_HEIGHT * getHeight()));
 
 			// --------------------------------------------------------------
@@ -182,9 +194,9 @@ public class GamePanel extends JPanel implements MouseListener,MouseMotionListen
 
 			for (int i = 12; i >= 1; i--) {
 
-				int x0 = (int) MARGIN_TRIANGLES * getWidth() + woodSize() + (12 - i) * triangle_w;
+				int x0 = (int) MARGIN_TRIANGLES * getWidth() + woodSize()[0] + (12 - i) * triangle_w;
 				if (i <= 6)
-					x0 = (int) MARGIN_TRIANGLES * getWidth() + woodSize() * 3
+					x0 = (int) MARGIN_TRIANGLES * getWidth() + woodSize()[0] * 3
 							+ (int) Math.round(GREEN_WIDTH * getWidth())
 							+ (int) (Math.round(GREEN_WIDTH - MARGIN_TRIANGLES) * getWidth()) + (6 - i) * triangle_w;
 
@@ -195,10 +207,10 @@ public class GamePanel extends JPanel implements MouseListener,MouseMotionListen
 					g2.setColor(COLOR_TRIANGLE_BLACK);
 				// TODO - should the border be of a different color?
 				g2.fillPolygon(new int[] { x0, x0 + triangle_w, (int) ((2 * x0 + triangle_w) / 2) }, new int[] {
-						(int) woodSize(), (int) woodSize(), (int) woodSize() + (int) (TRIANGLE_HEIGHT * getHeight()) },
+						woodSize()[1], woodSize()[1], woodSize()[1] + (int) (TRIANGLE_HEIGHT * getHeight()) },
 						3);
 				g2.drawPolygon(new int[] { x0, x0 + triangle_w, (int) ((2 * x0 + triangle_w) / 2) }, new int[] {
-						(int) woodSize(), (int) woodSize(), (int) woodSize() + (int) (TRIANGLE_HEIGHT * getHeight()) },
+						woodSize()[1], woodSize()[1], woodSize()[1] + (int) (TRIANGLE_HEIGHT * getHeight()) },
 						3);
 
 				// lower triangles
@@ -208,28 +220,19 @@ public class GamePanel extends JPanel implements MouseListener,MouseMotionListen
 					g2.setColor(COLOR_TRIANGLE_BLACK);
 				// TODO - should the border be of a different color?
 				g2.fillPolygon(new int[] { x0, x0 + triangle_w, (int) ((2 * x0 + triangle_w) / 2) },
-						new int[] { (int) getHeight() - woodSize(), (int) getHeight() - woodSize(),
-								(int) getHeight() - woodSize() - (int) (TRIANGLE_HEIGHT * getHeight()) },
+						new int[] { getHeight() - woodSize()[1], getHeight() - woodSize()[1],
+						getHeight() - woodSize()[1] - (int) (TRIANGLE_HEIGHT * getHeight()) },
 						3);
 				g2.drawPolygon(new int[] { x0, x0 + triangle_w, (int) ((2 * x0 + triangle_w) / 2) },
-						new int[] { (int) getHeight() - woodSize(), (int) getHeight() - woodSize(),
-								(int) getHeight() - woodSize() - (int) (TRIANGLE_HEIGHT * getHeight()) },
+						new int[] { getHeight() - woodSize()[1], getHeight() - woodSize()[1],
+						getHeight() - woodSize()[1] - (int) (TRIANGLE_HEIGHT * getHeight()) },
 						3);
 			}
 
 			// ----------------------------------------------------------
 			// CHIPS
 			// ----------------------------------------------------------
-			// active chip
-			if (activeChip) {
-				if (activeChipColor == 1)
-					g2.setColor(COLOR_W);
-				else
-					g2.setColor(COLOR_B);
-				g2.fillOval(activeChipX, activeChipY, chipSize(), chipSize());
-				g2.setColor(COLOR_OUTLINE);
-				g2.drawOval(activeChipX, activeChipY, chipSize(), chipSize());
-			}
+			
 			// other chips
 			for (int i = 0; i < 24; i++) {
 				int num = gameVisible.board.board[i][0];
@@ -267,7 +270,46 @@ public class GamePanel extends JPanel implements MouseListener,MouseMotionListen
 					g2.setColor(COLOR_OUTLINE);
 					g2.drawOval(x, y, chipSize(), chipSize());
 				}
-
+			}
+			
+			// captured chips
+			g2.setFont(g2.getFont().deriveFont((float) fontSize()));
+			
+			g2.setColor(COLOR_W);
+			g2.fillOval(getWidth() / 2 - (chipSize() / 2), getHeight() / 2 - chipSize(), chipSize(), chipSize());
+			g2.setColor(COLOR_OUTLINE);
+			g2.drawOval(getWidth() / 2 - (chipSize() / 2), getHeight() / 2 - chipSize(), chipSize(), chipSize());
+			
+			g2.setColor(TEXT_B);
+			if (gameVisible.board.whiteChipsCaptured < 10) {
+				g2.drawString(String.valueOf(gameVisible.board.whiteChipsCaptured), (int) (getWidth() / 2 - (chipSize() / 4.8)), getHeight() / 2 - (chipSize() / 4));
+			}
+			else {
+				g2.drawString(String.valueOf(gameVisible.board.whiteChipsCaptured), (int) (getWidth() / 2 - (chipSize() / 2.4)), getHeight() / 2 - (chipSize() / 4));
+			}
+			
+			g2.setColor(COLOR_B);
+			g2.fillOval(getWidth() / 2 - (chipSize() / 2), getHeight() / 2, chipSize(), chipSize());
+			g2.setColor(COLOR_OUTLINE);
+			g2.drawOval(getWidth() / 2 - (chipSize() / 2), getHeight() / 2, chipSize(), chipSize());
+			
+			g2.setColor(TEXT_W);
+			if (gameVisible.board.blackChipsCaptured < 10) {
+				g2.drawString(String.valueOf(gameVisible.board.blackChipsCaptured), (int) (getWidth() / 2 - (chipSize() / 4.8)), getHeight() / 2 - (chipSize() / 4) + chipSize());
+			}
+			else {
+				g2.drawString(String.valueOf(gameVisible.board.blackChipsCaptured), (int) (getWidth() / 2 - (chipSize() / 2.4)), getHeight() / 2 - (chipSize() / 4) + chipSize());
+			}
+			
+			// active chip
+			if (activeChip) {
+				if (activeChipColor == 1)
+					g2.setColor(COLOR_W);
+				else
+					g2.setColor(COLOR_B);
+				g2.fillOval(activeChipX, activeChipY, chipSize(), chipSize());
+				g2.setColor(COLOR_OUTLINE);
+				g2.drawOval(activeChipX, activeChipY, chipSize(), chipSize());
 			}
 			this.repaint();
 		} else
@@ -284,7 +326,6 @@ public class GamePanel extends JPanel implements MouseListener,MouseMotionListen
 				int x = e.getX();
 				int y = e.getY();
 				// checks all the top chekcers for the click
-				boolean misclick = true;
 				System.out.println("GUI: \tNa vrsti: " + Leader.gameVisible.player);
 				for (int i = 0; i < 24; i++) {// cheks all the triangels
 					// num of chips and colors in the triangle
@@ -295,7 +336,7 @@ public class GamePanel extends JPanel implements MouseListener,MouseMotionListen
 					if (color == 0)
 						continue;
 
-					// calculate the position oh the outside chip
+					// calculate the position of the outside chip
 					// (x0, y0) ....... upper left corner coordinates of the chip
 					int triangle_w = (int) Math.round(Math.round(GREEN_WIDTH * getWidth()) / 6.);
 					int x0 = triangleCoordinates(i)[0] + (int) Math.round((triangle_w - chipSize()) / 2.);
@@ -313,7 +354,6 @@ public class GamePanel extends JPanel implements MouseListener,MouseMotionListen
 							System.out.println("GUI: Misclick - tried to move a different chip\n\tTODO ukren neki");
 						} else {
 							System.out.println("GUI: Top chip selected!");
-							misclick = false;
 							activeChip = true;
 							activeChipColor = color;
 							activeChipIndex = i;
@@ -321,17 +361,58 @@ public class GamePanel extends JPanel implements MouseListener,MouseMotionListen
 							activeChipDy = y0 - y;
 							activeChipX = x0;// = x + dx
 							activeChipY = y0;// = y + dy
+							
+							return;
 						}
 					}
-
+				}
+				// TODO: check captured chips
+				int dw = chipSize() / 2;
+				int r = dw + CLICK_MARGIN;
+				
+				// white captured chips
+				int whitex0 = getWidth() / 2 - chipSize() / 2;
+				int whitey0 = getHeight() / 2 - chipSize();
+				if ((whitex0 + dw - x) * (whitex0 + dw - x) + (whitey0 + dw - y) * (whitey0 + dw - y) <= r*r){
+					if (Leader.gameVisible.player != 1) {
+						System.out.println("GUI: Misclick - tried to move a different chip\n\tTODO ukren neki");
+					} else {
+						System.out.println("GUI: White captured chip selected!");
+						activeChip = true;
+						activeChipColor = 1;
+						activeChipIndex = -1;
+						activeChipDx = whitex0 - x;
+						activeChipDy = whitey0 - y;
+						activeChipX = whitex0;// = x + dx
+						activeChipY = whitey0;// = y + dy
 						
+						return;
+					}
 				}
-
-				if (misclick) {
-					// This kind of click does nothing.
-					System.out.println("GUI: Misclick on (" + x + ", " + y + ")");
-					// System.out.println("");
+				
+				// black captured chips
+				int blackx0 = getWidth() / 2 - chipSize() / 2;
+				int blacky0 = getHeight() / 2;
+				if ((blackx0 + dw - x) * (blackx0 + dw - x) + (blacky0 + dw - y) * (blacky0 + dw - y) <= r*r){
+					if (Leader.gameVisible.player != -1) {
+						System.out.println("GUI: Misclick - tried to move a different chip\n\tTODO ukren neki");
+					} else {
+						System.out.println("GUI: Black captured chip selected!");
+						activeChip = true;
+						activeChipColor = -1;
+						activeChipIndex = 24;
+						activeChipDx = blackx0 - x;
+						activeChipDy = blacky0 - y;
+						activeChipX = blackx0;// = x + dx
+						activeChipY = blacky0;// = y + dy
+						
+						return;
+					}
 				}
+				
+				// This kind of click does nothing.
+				System.out.println("GUI: Misclick on (" + x + ", " + y + ")");
+				// System.out.println("");
 			}
 		}
 	}
@@ -350,14 +431,14 @@ public class GamePanel extends JPanel implements MouseListener,MouseMotionListen
 			// Released on the wooden part
 			if ((x < triangleCoordinates(5)[0] && x > triangleCoordinates(6)[0] + (TRIANGLE_WIDTH * getWidth())) || // wooden middle column
 				(x < triangleCoordinates(11)[0]) || // wooden left column
-				(x > triangleCoordinates(0)[0]) || // wooden right column
+				(x > triangleCoordinates(0)[0] + (TRIANGLE_WIDTH * getWidth())) || // wooden right column
 				(y < triangleCoordinates(23)[1]) || // wooden top row
 				(y > triangleCoordinates(0)[1])) // wooden bottom row
 			{
 				System.out.println("GUI: Not released on a triangle");
 			}
 			// Indicies 0 to 11
-			else if (y > (1 - TRIANGLE_HEIGHT) * getHeight() - woodSize()) {
+			else if (y > (1 - TRIANGLE_HEIGHT) * getHeight() - woodSize()[1]) {
 				int i = 11;
 				while (x > triangleCoordinates(i - 1)[0] && i >= 1) {
 					--i;
@@ -368,7 +449,7 @@ public class GamePanel extends JPanel implements MouseListener,MouseMotionListen
 				}
 			}
 			// Indicies 12 to 23
-			else if (y < TRIANGLE_HEIGHT * getHeight() + woodSize()) {
+			else if (y < TRIANGLE_HEIGHT * getHeight() + woodSize()[1]) {
 				int i = 12;
 				while (x > triangleCoordinates(i + 1)[0] && i <= 22) {
 					++i;
