@@ -44,6 +44,7 @@ public class GamePanel extends JPanel implements MouseListener,MouseMotionListen
 	private final static Color COLOR_BACKGROUND = new Color(27, 69, 24);// Color.GREEN;
 	private final static Color COLOR_WOOD = new Color(138, 99, 55);
 	private final static Color COLOR_OUTLINE = Color.BLACK;
+	private final static Color COLOR_OUTLINE_HIGHLITED = Color.YELLOW;
 	private final static Color COLOR_TRIANGLE_WHITE = new Color(204, 30, 9);
 	private final static Color COLOR_TRIANGLE_BLACK = new Color(221, 222, 171);
 	private final static Color TEXT_B = Color.BLACK;
@@ -267,7 +268,12 @@ public class GamePanel extends JPanel implements MouseListener,MouseMotionListen
 						g2.setColor(COLOR_B);
 
 					g2.fillOval(x, y, chipSize(), chipSize());
-					g2.setColor(COLOR_OUTLINE);
+
+					//we highlight the chips that can be moved
+					if (color == Leader.gameVisible.player && j == num && i != activeChipIndex) {
+						g2.setColor(COLOR_OUTLINE_HIGHLITED);
+					}
+					else g2.setColor(COLOR_OUTLINE);
 					g2.drawOval(x, y, chipSize(), chipSize());
 				}
 			}
@@ -277,7 +283,8 @@ public class GamePanel extends JPanel implements MouseListener,MouseMotionListen
 			
 			g2.setColor(COLOR_W);
 			g2.fillOval(getWidth() / 2 - (chipSize() / 2), getHeight() / 2 - chipSize(), chipSize(), chipSize());
-			g2.setColor(COLOR_OUTLINE);
+			if(Leader.gameVisible.player == 1 && gameVisible.board.whiteChipsCaptured > 0) g2.setColor(COLOR_OUTLINE_HIGHLITED);
+			else g2.setColor(COLOR_OUTLINE);
 			g2.drawOval(getWidth() / 2 - (chipSize() / 2), getHeight() / 2 - chipSize(), chipSize(), chipSize());
 			
 			g2.setColor(TEXT_B);
@@ -290,7 +297,8 @@ public class GamePanel extends JPanel implements MouseListener,MouseMotionListen
 			
 			g2.setColor(COLOR_B);
 			g2.fillOval(getWidth() / 2 - (chipSize() / 2), getHeight() / 2, chipSize(), chipSize());
-			g2.setColor(COLOR_OUTLINE);
+			if(Leader.gameVisible.player == -1 && gameVisible.board.blackChipsCaptured > 0) g2.setColor(COLOR_OUTLINE_HIGHLITED);
+			else g2.setColor(COLOR_OUTLINE);
 			g2.drawOval(getWidth() / 2 - (chipSize() / 2), getHeight() / 2, chipSize(), chipSize());
 			
 			g2.setColor(TEXT_W);
@@ -308,7 +316,7 @@ public class GamePanel extends JPanel implements MouseListener,MouseMotionListen
 				else
 					g2.setColor(COLOR_B);
 				g2.fillOval(activeChipX, activeChipY, chipSize(), chipSize());
-				g2.setColor(COLOR_OUTLINE);
+				g2.setColor(COLOR_OUTLINE_HIGHLITED);
 				g2.drawOval(activeChipX, activeChipY, chipSize(), chipSize());
 			}
 			this.repaint();
