@@ -101,7 +101,7 @@ public class Board {
      *      - Implementation
      * 
      * @param dice Pair<Integer, Integer> {first dice throw, second dice throw}
-     * @return List of legal moves. Move - Pair<int,int> {starting position, final position}
+     * @return List of legal moves. Move - Pair<Integer, Integer> {starting position, final position}
      */
     public List<Pair<Integer, Integer>> getLegalMoves(Pair<Integer, Integer> dice) {
     	/*
@@ -109,11 +109,15 @@ public class Board {
     	 *   - If there are captured chips, they must be placed onto the board before any other move can be made.
     	 *   - Can only move off the board if all chips are in the final sector.
     	 *   - Can only capture lone opponent chips, not stacks.
-    	 *   - Cannot place oneself into a position with no legal moves.
+    	 *   - Must make as many moves as possible.
+    	 *   - When there are no more moves possible, the turn ends.
+    	 *   - Doubles mean both dice must be used twice.
+    	 *   - If either one dice or the other can be used but not both, the higher number one must be used.
     	 *   
     	 * Things to keep in mind:
     	 *   - Changing the order of the considered moves might allow one to get a legal position when the other
     	 *     move order would not allow that.
+    	 *   - Again, you must make as many moves as possible ---> only save the longest sequences.
     	 */
         
         System.out.println("getLegalMoves not (yet) implemented.");
@@ -312,7 +316,14 @@ public class Board {
             System.out.println("Final position is full!");
             return false;
         }
-        //enough chips in the beginning, enough space in the end
+        // enough chips in the beginning, enough space in the end
+        // check for captured chips
+        if ((board[start][1] == 1 && whiteChipsCaptured != 0) || (board[start][1] == -1 && blackChipsCaptured != 0)) {
+        	System.out.println(errorMsg);
+        	System.out.println("Captured chips need to be played first!");
+        	return false;
+        }
+        
         // end is empty
         if (board[end][0] == 0) {
         	board[end][0] = 1;

@@ -262,15 +262,23 @@ public class GamePanel extends JPanel implements MouseListener,MouseMotionListen
 			}
 			// TODO: draw dice
 			else {
-				g2.setColor(COLOR_W);
-				g2.fillRect(rollPosition()[0], rollPosition()[1], rollSize()[0], rollSize()[1]);
+				int spacing = ((int) (GREEN_WIDTH * getWidth()) - 2 * chipSize()) / 3; 
 				
-				g2.setColor(COLOR_OUTLINE);
-				g2.drawRect(rollPosition()[0], rollPosition()[1], rollSize()[0], rollSize()[1]);
+				g2.setColor(COLOR_W);
+				g2.fillRoundRect(woodSize()[0] + spacing, getHeight() / 2 - chipSize() / 2, chipSize(), chipSize(), chipSize() / 4, chipSize() / 4);
+				g2.fillRoundRect(woodSize()[0] + 2 * spacing + chipSize(), getHeight() / 2 - chipSize() / 2, chipSize(), chipSize(), chipSize() / 4, chipSize() / 4);
+				
+				g2.setColor(COLOR_B);
+				g2.drawRoundRect(woodSize()[0] + spacing, getHeight() / 2 - chipSize() / 2, chipSize(), chipSize(), chipSize() / 4, chipSize() / 4);
+				g2.drawRoundRect(woodSize()[0] + 2 * spacing + chipSize(), getHeight() / 2 - chipSize() / 2, chipSize(), chipSize(), chipSize() / 4, chipSize() / 4);
 				
 				g2.setFont(g2.getFont().deriveFont((float) fontSize()));
 				g2.setColor(TEXT_B);
-				g2.drawString("DICE!", stringRollPosition()[0], stringRollPosition()[1]);
+				g2.drawString(String.valueOf(gameVisible.board.dice.getFirst()), woodSize()[0] + spacing + chipSize() * 7 / 24, getHeight() / 2 + chipSize() / 4);
+				g2.drawString(String.valueOf(gameVisible.board.dice.getLast()), woodSize()[0] + 2 * spacing + chipSize() + chipSize() * 7 / 24, getHeight() / 2 + chipSize() / 4);
+				
+				
+				
 			}
 			// ----------------------------------------------------------
 			// CHIPS
@@ -474,12 +482,13 @@ public class GamePanel extends JPanel implements MouseListener,MouseMotionListen
 		int x = e.getX();
 		int y = e.getY();
 		GameVisible gameVisible = Leader.gameVisible;
-		if (gameVisible != null && !diceRolled) {
+		if (gameVisible != null && !diceRolled && Leader.humanRound) {
 			if (x >= rollPosition()[0] && x <= rollPosition()[0] + rollSize()[0] &&
-					y >= rollPosition()[1] && y <= rollPosition()[1] + rollSize()[1]) {
-					gameVisible.board.rollDice();
-					diceRolled = true;
-				}
+				y >= rollPosition()[1] && y <= rollPosition()[1] + rollSize()[1])
+			{
+				gameVisible.board.rollDice();
+				diceRolled = true;
+			}
 		}
 	}
 
