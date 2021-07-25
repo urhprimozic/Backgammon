@@ -1,6 +1,7 @@
 package rules;
 
 import java.util.List;
+import java.util.Random;
 
 import utils.Pair;
 /**
@@ -27,6 +28,9 @@ public class Board {
 	
 	public boolean whiteFinal;
 	public boolean blackFinal;
+	
+	private Random rand;
+	public Pair<Integer, Integer> dice;
 	
 	/**
 	 * Pair<Integer, Integer> offboard
@@ -77,8 +81,20 @@ public class Board {
         blackFinal = false;
         
         offboard = new Pair<Integer, Integer>(0, 0); // no chips have passed off the board at the start
+        
+        rand = new Random();
+        dice = new Pair<Integer, Integer>(null, null);
     }
-
+    
+    public void rollDice() {
+    	dice.setFirst(rand.nextInt(6) + 1);
+    	dice.setLast(rand.nextInt(6) + 1);
+    }
+    
+    public void clearDice() {
+    	dice.setFirst(null);
+    	dice.setLast(null);
+    }
 	
 	/**
      * TODO - Currently takes in a dice throw, maybe repeat for all possible combos of dice?

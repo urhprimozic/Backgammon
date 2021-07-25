@@ -9,10 +9,13 @@ public class GameVisible {
 
 	public Board board;
 	public int player;
+	
+	public int movesMade;
 
 	public GameVisible() {
 		board = new Board();
 		player = 1;
+		movesMade = 0;
 	}
 	/**
 	 * Plays a move, if its possible. False otherwise
@@ -21,7 +24,11 @@ public class GameVisible {
 	 */
 	public boolean playMove(Pair<Integer, Integer> move) {
 		if (board.executeMove(move)) {
-			player *= -1;
+			movesMade++;
+			if (movesMade == 2) {
+				player *= -1;
+				movesMade = 0;
+			}
 			return true;
 		}
 		return false;
