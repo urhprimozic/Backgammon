@@ -70,6 +70,8 @@ public class GamePanel extends JPanel implements MouseListener, MouseMotionListe
 
 	private boolean diceRolled;
 
+	private PopUp noGame;
+
 	public GamePanel() {
 		setBackground(COLOR_BACKGROUND);
 
@@ -79,6 +81,9 @@ public class GamePanel extends JPanel implements MouseListener, MouseMotionListe
 		// this.addMouseMotionListener(this);
 		activeChip = false;
 		diceRolled = false;
+
+		// popups:
+		noGame = new PopUp("Dobrodošli v igri Backgammon", "Izberite igro v meniju", this);
 	}
 
 	/**
@@ -102,7 +107,7 @@ public class GamePanel extends JPanel implements MouseListener, MouseMotionListe
 	 * 
 	 * @return font size in pixels
 	 */
-	private int fontSize() {
+	protected int fontSize() {
 		return (int) (chipSize() / 1.5);
 	}
 
@@ -119,8 +124,7 @@ public class GamePanel extends JPanel implements MouseListener, MouseMotionListe
 	}
 
 	private int[] stringRemovedPosition() {
-		return new int[] { (3 * getWidth() / 4) - (int) ( chipSize() / 1.02),
-				(getHeight() / 2) + chipSize() / 4 };
+		return new int[] { (3 * getWidth() / 4) - (int) (chipSize() / 1.02), (getHeight() / 2) + chipSize() / 4 };
 	}
 
 	/**
@@ -181,7 +185,6 @@ public class GamePanel extends JPanel implements MouseListener, MouseMotionListe
 	protected void paintComponent(Graphics g) {
 		super.paintComponent(g);
 
-		// TODO remove if redundant
 		Graphics2D g2 = (Graphics2D) g;
 
 		if (Leader.gameVisible != null) {
@@ -251,7 +254,8 @@ public class GamePanel extends JPanel implements MouseListener, MouseMotionListe
 			// ----------------------------------------------------------
 			g2.setColor(COLOR_TEXT);
 			g2.setFont(g2.getFont().deriveFont((float) fontSize() * (float) 0.5));
-			g2.drawString("CHIPS", (int) (stringRemovedPosition()[0] + fontSize()/1.42),(int)  (stringRemovedPosition()[1]  - fontSize()*0.5));
+			g2.drawString("CHIPS", (int) (stringRemovedPosition()[0] + fontSize() / 1.42),
+					(int) (stringRemovedPosition()[1] - fontSize() * 0.5));
 			g2.drawString("OFF BOARD", stringRemovedPosition()[0], stringRemovedPosition()[1]);
 
 			g2.setFont(g2.getFont().deriveFont((float) fontSize()));
@@ -311,28 +315,33 @@ public class GamePanel extends JPanel implements MouseListener, MouseMotionListe
 			}
 			// TODO: draw dice
 			else {
-				int spacing = ((int) (GREEN_WIDTH * getWidth()) - 2 * chipSize()) / 3; 
-				
+				int spacing = ((int) (GREEN_WIDTH * getWidth()) - 2 * chipSize()) / 3;
+
 				g2.setColor(COLOR_W);
 				g2.fillRect(rollPosition()[0], rollPosition()[1], rollSize()[0], rollSize()[1]);
 
 				g2.setColor(COLOR_OUTLINE);
 				g2.drawRect(rollPosition()[0], rollPosition()[1], rollSize()[0], rollSize()[1]);
 
-				g2.fillRoundRect(woodSize()[0] + spacing, getHeight() / 2 - chipSize() / 2, chipSize(), chipSize(), chipSize() / 4, chipSize() / 4);
-				g2.fillRoundRect(woodSize()[0] + 2 * spacing + chipSize(), getHeight() / 2 - chipSize() / 2, chipSize(), chipSize(), chipSize() / 4, chipSize() / 4);
-				
+				g2.fillRoundRect(woodSize()[0] + spacing, getHeight() / 2 - chipSize() / 2, chipSize(), chipSize(),
+						chipSize() / 4, chipSize() / 4);
+				g2.fillRoundRect(woodSize()[0] + 2 * spacing + chipSize(), getHeight() / 2 - chipSize() / 2, chipSize(),
+						chipSize(), chipSize() / 4, chipSize() / 4);
+
 				g2.setColor(COLOR_B);
-				g2.drawRoundRect(woodSize()[0] + spacing, getHeight() / 2 - chipSize() / 2, chipSize(), chipSize(), chipSize() / 4, chipSize() / 4);
-				g2.drawRoundRect(woodSize()[0] + 2 * spacing + chipSize(), getHeight() / 2 - chipSize() / 2, chipSize(), chipSize(), chipSize() / 4, chipSize() / 4);
-				
+				g2.drawRoundRect(woodSize()[0] + spacing, getHeight() / 2 - chipSize() / 2, chipSize(), chipSize(),
+						chipSize() / 4, chipSize() / 4);
+				g2.drawRoundRect(woodSize()[0] + 2 * spacing + chipSize(), getHeight() / 2 - chipSize() / 2, chipSize(),
+						chipSize(), chipSize() / 4, chipSize() / 4);
+
 				g2.setFont(g2.getFont().deriveFont((float) fontSize()));
 				g2.setColor(TEXT_B);
-				g2.drawString(String.valueOf(gameVisible.board.dice.getFirst()), woodSize()[0] + spacing + chipSize() * 7 / 24, getHeight() / 2 + chipSize() / 4);
-				g2.drawString(String.valueOf(gameVisible.board.dice.getLast()), woodSize()[0] + 2 * spacing + chipSize() + chipSize() * 7 / 24, getHeight() / 2 + chipSize() / 4);
-				
-				
-				
+				g2.drawString(String.valueOf(gameVisible.board.dice.getFirst()),
+						woodSize()[0] + spacing + chipSize() * 7 / 24, getHeight() / 2 + chipSize() / 4);
+				g2.drawString(String.valueOf(gameVisible.board.dice.getLast()),
+						woodSize()[0] + 2 * spacing + chipSize() + chipSize() * 7 / 24,
+						getHeight() / 2 + chipSize() / 4);
+
 			}
 			// ----------------------------------------------------------
 			// CHIPS
@@ -434,8 +443,11 @@ public class GamePanel extends JPanel implements MouseListener, MouseMotionListe
 			}
 			this.repaint();
 		} else
-			// TODO ne tega u log pisat k lah da kod ni tosd kul
-			System.out.println("GUI: Nč nam risu k nč ni za risat bučko");
+			noGame.draw(g, COLOR_BACKGROUND, COLOR_B, Color.WHITE, getWidth() / 7, getHeight() / 5, 5 * getWidth() / 7,
+					3 * getHeight() / 5);
+		
+		// TODO ne tega u log pisat k lah da kod ni tosd kul
+		// System.out.println("GUI: Nč nam risu k nč ni za risat bučko");
 	}
 
 	@Override
@@ -543,9 +555,8 @@ public class GamePanel extends JPanel implements MouseListener, MouseMotionListe
 		int y = e.getY();
 		GameVisible gameVisible = Leader.gameVisible;
 		if (gameVisible != null && !diceRolled && Leader.humanRound) {
-			if (x >= rollPosition()[0] && x <= rollPosition()[0] + rollSize()[0] &&
-				y >= rollPosition()[1] && y <= rollPosition()[1] + rollSize()[1])
-			{
+			if (x >= rollPosition()[0] && x <= rollPosition()[0] + rollSize()[0] && y >= rollPosition()[1]
+					&& y <= rollPosition()[1] + rollSize()[1]) {
 				gameVisible.board.rollDice();
 				diceRolled = true;
 			}
