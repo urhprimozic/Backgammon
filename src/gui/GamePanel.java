@@ -310,20 +310,14 @@ public class GamePanel extends JPanel implements MouseListener, MouseMotionListe
 				g2.setColor(TEXT_B);
 				g2.drawString("ROLL!", stringRollPosition()[0], stringRollPosition()[1]);
 			}
-			// TODO: draw dice
 			else {
 				int spacing = ((int) (GREEN_WIDTH * getWidth()) - 2 * chipSize()) / 3; 
 				
 				g2.setColor(COLOR_W);
-				g2.fillRect(rollPosition()[0], rollPosition()[1], rollSize()[0], rollSize()[1]);
-
-				g2.setColor(COLOR_OUTLINE);
-				g2.drawRect(rollPosition()[0], rollPosition()[1], rollSize()[0], rollSize()[1]);
-
 				g2.fillRoundRect(woodSize()[0] + spacing, getHeight() / 2 - chipSize() / 2, chipSize(), chipSize(), chipSize() / 4, chipSize() / 4);
 				g2.fillRoundRect(woodSize()[0] + 2 * spacing + chipSize(), getHeight() / 2 - chipSize() / 2, chipSize(), chipSize(), chipSize() / 4, chipSize() / 4);
 				
-				g2.setColor(COLOR_B);
+				g2.setColor(COLOR_OUTLINE);
 				g2.drawRoundRect(woodSize()[0] + spacing, getHeight() / 2 - chipSize() / 2, chipSize(), chipSize(), chipSize() / 4, chipSize() / 4);
 				g2.drawRoundRect(woodSize()[0] + 2 * spacing + chipSize(), getHeight() / 2 - chipSize() / 2, chipSize(), chipSize(), chipSize() / 4, chipSize() / 4);
 				
@@ -554,7 +548,7 @@ public class GamePanel extends JPanel implements MouseListener, MouseMotionListe
 				List<List<Pair<Integer, Integer>>> legal = gameVisible.board.getLegalMoves(gameVisible.player, gameVisible.board.dice);
 				for (int i = 0; i < legal.size(); ++i) {
 					Pair<Integer, Integer> test1 = legal.get(i).get(0);
-					Pair<Integer, Integer> test2 = new Pair<Integer, Integer>(100, 100);
+					Pair<Integer, Integer> test2 = new Pair<Integer, Integer>(null, null);
 					if (legal.get(i).size() != 1) {
 						test2 = legal.get(i).get(1);
 					}
