@@ -8,6 +8,7 @@ import java.awt.Graphics2D;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.util.List;
 
 import javax.swing.JPanel;
 
@@ -488,6 +489,18 @@ public class GamePanel extends JPanel implements MouseListener,MouseMotionListen
 			{
 				gameVisible.board.rollDice();
 				diceRolled = true;
+				
+				System.out.println("GUI: Legal moves for player " + gameVisible.player);
+				List<List<Pair<Integer, Integer>>> legal = gameVisible.board.getLegalMoves(gameVisible.player, gameVisible.board.dice);
+				for (int i = 0; i < legal.size(); ++i) {
+					Pair<Integer, Integer> test1 = legal.get(i).get(0);
+					Pair<Integer, Integer> test2 = new Pair<Integer, Integer>(100, 100);
+					if (legal.get(i).size() != 1) {
+						test2 = legal.get(i).get(1);
+					}
+					System.out.println("GUI: legal move: " + test1.getFirst() + " -> " + test1.getLast() + ", " + test2.getFirst() + " -> " + test2.getLast());
+				}
+				System.out.println();
 			}
 		}
 	}
