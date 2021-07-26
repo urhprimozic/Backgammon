@@ -58,7 +58,7 @@ public class GamePanel extends JPanel implements MouseListener, MouseMotionListe
 	/**
 	 * True, if one chip is being moved around
 	 */
-	private boolean activeChip;
+	public boolean activeChip;
 	/**
 	 * Index of the triagnle, from which we took an active chip
 	 */
@@ -69,8 +69,6 @@ public class GamePanel extends JPanel implements MouseListener, MouseMotionListe
 	private int activeChipDy;
 	private int activeChipColor;
 
-	private boolean diceRolled;
-
 	public GamePanel() {
 		setBackground(COLOR_BACKGROUND);
 
@@ -79,7 +77,6 @@ public class GamePanel extends JPanel implements MouseListener, MouseMotionListe
 		this.addMouseMotionListener(this);
 		// this.addMouseMotionListener(this);
 		activeChip = false;
-		diceRolled = false;
 	}
 
 	/**
@@ -299,7 +296,7 @@ public class GamePanel extends JPanel implements MouseListener, MouseMotionListe
 
 			// Dice rolling
 			// TODO: only if active player is human
-			if (!diceRolled) {
+			if (!Leader.diceRolled) {
 				g2.setColor(COLOR_W);
 				g2.fillRect(rollPosition()[0], rollPosition()[1], rollSize()[0], rollSize()[1]);
 
@@ -369,7 +366,7 @@ public class GamePanel extends JPanel implements MouseListener, MouseMotionListe
 
 					// we highlight the chips that can be moved
 					// TODO: only legal moves for the given dice roll
-					if (diceRolled && color == Leader.gameVisible.player && j == num
+					if (Leader.diceRolled && color == Leader.gameVisible.player && j == num
 							&& (!activeChip || i != activeChipIndex)) {
 						g2.setColor(COLOR_OUTLINE_HIGHLITED);
 					} else
@@ -384,7 +381,7 @@ public class GamePanel extends JPanel implements MouseListener, MouseMotionListe
 			g2.setColor(COLOR_W);
 			g2.fillOval(getWidth() / 2 - (chipSize() / 2), getHeight() / 2 - chipSize(), chipSize(), chipSize());
 			// TODO: only legal moves for the given dice roll
-			if (Leader.gameVisible.player == 1 && gameVisible.board.whiteChipsCaptured > 0 && diceRolled)
+			if (Leader.gameVisible.player == 1 && gameVisible.board.whiteChipsCaptured > 0 && Leader.diceRolled)
 				g2.setColor(COLOR_OUTLINE_HIGHLITED);
 			else
 				g2.setColor(COLOR_OUTLINE);
@@ -402,7 +399,7 @@ public class GamePanel extends JPanel implements MouseListener, MouseMotionListe
 			g2.setColor(COLOR_B);
 			g2.fillOval(getWidth() / 2 - (chipSize() / 2), getHeight() / 2, chipSize(), chipSize());
 			// TODO: only legal moves for the given dice roll
-			if (Leader.gameVisible.player == -1 && gameVisible.board.blackChipsCaptured > 0 && diceRolled)
+			if (Leader.gameVisible.player == -1 && gameVisible.board.blackChipsCaptured > 0 && Leader.diceRolled)
 				g2.setColor(COLOR_OUTLINE_HIGHLITED);
 			else
 				g2.setColor(COLOR_OUTLINE);
@@ -438,7 +435,7 @@ public class GamePanel extends JPanel implements MouseListener, MouseMotionListe
 		System.out.println("GUI: mouse pressed");
 		GameVisible gameVisible = Leader.gameVisible;
 		if (gameVisible != null) {
-			if (Leader.humanRound && diceRolled) {
+			if (Leader.humanRound && Leader.diceRolled) {
 				int x = e.getX();
 				int y = e.getY();
 				// checks all the top chips for the click
@@ -537,12 +534,12 @@ public class GamePanel extends JPanel implements MouseListener, MouseMotionListe
 		int x = e.getX();
 		int y = e.getY();
 		GameVisible gameVisible = Leader.gameVisible;
-		if (gameVisible != null && !diceRolled && Leader.humanRound) {
+		if (gameVisible != null && !Leader.diceRolled && Leader.humanRound) {
 			if (x >= rollPosition()[0] && x <= rollPosition()[0] + rollSize()[0] &&
 				y >= rollPosition()[1] && y <= rollPosition()[1] + rollSize()[1])
 			{
 				gameVisible.board.rollDice();
-				diceRolled = true;
+				Leader.diceRolled = true;
 				
 				System.out.println("GUI: Legal moves for player " + gameVisible.player);
 				List<List<Pair<Integer, Integer>>> legal = gameVisible.board.getLegalMoves(gameVisible.player, gameVisible.board.dice);
@@ -600,7 +597,7 @@ public class GamePanel extends JPanel implements MouseListener, MouseMotionListe
 				if (success) {
 					System.out.println("GUI: Moved chip from triangle " + activeChipIndex + " to triangle " + i);
 					if (gameVisible.movesMade == 0) {
-						diceRolled = false;
+						Leader.diceRolled = false;
 					}
 				}
 			}
@@ -617,7 +614,7 @@ public class GamePanel extends JPanel implements MouseListener, MouseMotionListe
 				if (success) {
 					System.out.println("GUI: Moved chip from triangle " + activeChipIndex + " to triangle " + i);
 					if (gameVisible.movesMade == 0) {
-						diceRolled = false;
+						Leader.diceRolled = false;
 					}
 				}
 			}
