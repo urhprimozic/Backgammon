@@ -2,6 +2,7 @@ package leader;
 
 import java.util.Map;
 
+import gui.GamePanel;
 import gui.MainFrame;
 import rules.GameVisible;
 
@@ -13,13 +14,15 @@ public class Leader {
   public static MainFrame frame;
 
   public static boolean humanRound = true;
+  
+  public static boolean diceRolled = false;
 
   //public static Inteligenca comp1;
   //public static Inteligenca comp2;
 
   public static void newGame() {
     gameVisible = new GameVisible();
-    
+    diceRolled = false;
     //
     // if (vrstaIgralca.get(1) == VrstaIgralca.R) {
     // comp1 = new Inteligenca();

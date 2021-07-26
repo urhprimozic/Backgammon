@@ -1,5 +1,6 @@
 package rules;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 
@@ -98,15 +99,15 @@ public class Board {
         dice.setFirst(null);
         dice.setLast(null);
     }
-
-    /**
-     * TODO - Currently takes in a dice throw, maybe repeat for all possible combos
-     * of dice? - Implementation
+	
+	/**
+     * TODO - Implementation
      * 
-     * @param dice Pair<Integer, Integer> {first dice throw, second dice throw}
+     * @param   player int
+     * @param   dice Pair<Integer, Integer> {first dice throw, second dice throw}
      * @return List of legal moves. Move - Pair<Integer, Integer> {starting position, final position}
      */
-    public List<Pair<Integer, Integer>> getLegalMoves(Pair<Integer, Integer> dice) {
+    public List<List<Pair<Integer, Integer>>> getLegalMoves(int player, Pair<Integer, Integer> dice) {
     	/*
     	 * Rules: 
     	 *   - If there are captured chips, they must be placed onto the board before any other move can be made.
@@ -122,9 +123,250 @@ public class Board {
     	 *     move order would not allow that.
     	 *   - Again, you must make as many moves as possible ---> only save the longest sequences.
     	 */
-        
-        System.out.println("getLegalMoves not (yet) implemented.");
-        return null;
+    	
+    	int[][] startBoard = new int[24][2];
+    	int startWhiteCaptured = whiteChipsCaptured;
+    	int startBlackCaptured = blackChipsCaptured;
+    	Pair<Integer, Integer> startOffboard = new Pair<Integer, Integer>(offboard.getFirst(), offboard.getLast());
+    	for (int i = 0; i <= 23; ++i) {
+    		startBoard[i] = new int[] {board[i][0], board[i][1]};
+    	}
+    	
+    	List<List<Pair<Integer, Integer>>> legalMoves = new LinkedList<List<Pair<Integer, Integer>>>();
+    	int longestSequence = 0;
+    	int biggestDice = 0;
+    	
+    	if (player == 1) {
+    		for (int i = -1; i <= 23; ++i) {
+    			if (i >= 0 && board[i][1] != 1) {
+    				continue;
+    			}
+	    		Pair<Integer, Integer> move1 = new Pair<Integer, Integer>(i, Math.min(i + dice.getFirst(), 24));
+    			if (executeMove(move1)) {
+    				int[][] currBoard = new int[24][2];
+        	    	int currWhiteCaptured = whiteChipsCaptured;
+        	    	int currBlackCaptured = blackChipsCaptured;
+        	    	Pair<Integer, Integer> currOffboard = new Pair<Integer, Integer>(offboard.getFirst(), offboard.getLast());
+        	    	for (int k = 0; k <= 23; ++k) {
+        	    		currBoard[k] = new int[] {board[k][0], board[k][1]};
+        	    	}
+        	    	for (int j = -1; j <= 23; ++j) {
+        	    		if (j >= 0 && board[j][1] != 1) {
+            				continue;
+            			}
+        	    		Pair<Integer, Integer> move2 = new Pair<Integer, Integer>(j, Math.min(j + dice.getLast(), 24));
+						if (executeMove(move2)) {
+							List<Pair<Integer, Integer>> move = new LinkedList<Pair<Integer, Integer>>();
+							move.add(move1);
+							move.add(move2);
+							if (longestSequence != 2) {
+								legalMoves.clear();
+							}
+							legalMoves.add(move);
+							
+							longestSequence = 2;
+							biggestDice = 7;
+							
+							for (int idx = 0; idx <= 23; ++idx) {
+								board[idx] = new int[] {currBoard[idx][0], currBoard[idx][1]};
+							}
+							whiteChipsCaptured = currWhiteCaptured;
+							blackChipsCaptured = currBlackCaptured;
+							offboard = new Pair<Integer, Integer>(currOffboard.getFirst(), currOffboard.getLast());
+						}
+						else {
+							if (longestSequence == 2 || (dice.getFirst() < biggestDice)) {
+								continue;
+							}
+							List<Pair<Integer, Integer>> move = new LinkedList<Pair<Integer, Integer>>();
+							move.add(move1);
+							biggestDice = dice.getFirst();
+							longestSequence = 1;
+							legalMoves.add(move);
+						}
+        	    	}
+	    			for (int idx = 0; idx <= 23; ++idx) {
+						board[idx] = new int[] {startBoard[idx][0], startBoard[idx][1]};
+					}
+					whiteChipsCaptured = startWhiteCaptured;
+					blackChipsCaptured = startBlackCaptured;
+					offboard = new Pair<Integer, Integer>(startOffboard.getFirst(), startOffboard.getLast());
+    			}
+    		}
+    		
+    		for (int i = -1; i <= 23; ++i) {
+    			if (i >= 0 && board[i][1] != 1) {
+    				continue;
+    			}
+	    		Pair<Integer, Integer> move1 = new Pair<Integer, Integer>(i, Math.min(i + dice.getLast(), 24));
+    			if (executeMove(move1)) {
+    				int[][] currBoard = new int[24][2];
+        	    	int currWhiteCaptured = whiteChipsCaptured;
+        	    	int currBlackCaptured = blackChipsCaptured;
+        	    	Pair<Integer, Integer> currOffboard = new Pair<Integer, Integer>(offboard.getFirst(), offboard.getLast());
+        	    	for (int k = 0; k <= 23; ++k) {
+        	    		currBoard[k] = new int[] {board[k][0], board[k][1]};
+        	    	}
+        	    	for (int j = -1; j <= 23; ++j) {
+        	    		if (j >= 0 && board[j][1] != 1) {
+            				continue;
+            			}
+        	    		Pair<Integer, Integer> move2 = new Pair<Integer, Integer>(j, Math.min(j + dice.getFirst(), 24));
+						if (executeMove(move2)) {
+							List<Pair<Integer, Integer>> move = new LinkedList<Pair<Integer, Integer>>();
+							move.add(move1);
+							move.add(move2);
+							if (longestSequence != 2) {
+								legalMoves.clear();
+							}
+							legalMoves.add(move);
+							
+							longestSequence = 2;
+							biggestDice = 7;
+							
+							for (int idx = 0; idx <= 23; ++idx) {
+								board[idx] = new int[] {currBoard[idx][0], currBoard[idx][1]};
+							}
+							whiteChipsCaptured = currWhiteCaptured;
+							blackChipsCaptured = currBlackCaptured;
+							offboard = new Pair<Integer, Integer>(currOffboard.getFirst(), currOffboard.getLast());
+						}
+						else {
+							if (longestSequence == 2 || (dice.getLast() < biggestDice)) {
+								continue;
+							}
+							List<Pair<Integer, Integer>> move = new LinkedList<Pair<Integer, Integer>>();
+							move.add(move1);
+							biggestDice = dice.getLast();
+							longestSequence = 1;
+							legalMoves.add(move);
+						}
+        	    	}
+	    			for (int idx = 0; idx <= 23; ++idx) {
+						board[idx] = new int[] {startBoard[idx][0], startBoard[idx][1]};
+					}
+					whiteChipsCaptured = startWhiteCaptured;
+					blackChipsCaptured = startBlackCaptured;
+					offboard = new Pair<Integer, Integer>(startOffboard.getFirst(), startOffboard.getLast());
+    			}
+    		}
+    	}
+    	else {
+    		for (int i = 0; i <= 24; ++i) {
+    			if (i < 24 && board[i][1] != -1) {
+    				continue;
+    			}
+	    		Pair<Integer, Integer> move1 = new Pair<Integer, Integer>(i, Math.max(i - dice.getFirst(), -1));
+    			if (executeMove(move1)) {
+    				int[][] currBoard = new int[24][2];
+        	    	int currWhiteCaptured = whiteChipsCaptured;
+        	    	int currBlackCaptured = blackChipsCaptured;
+        	    	Pair<Integer, Integer> currOffboard = new Pair<Integer, Integer>(offboard.getFirst(), offboard.getLast());
+        	    	for (int k = 0; k <= 23; ++k) {
+        	    		currBoard[k] = new int[] {board[k][0], board[k][1]};
+        	    	}
+        	    	for (int j = 0; j <= 24; ++j) {
+        	    		if (j < 24 && board[j][1] != -1) {
+            				continue;
+            			}
+        	    		Pair<Integer, Integer> move2 = new Pair<Integer, Integer>(j, Math.max(j - dice.getLast(), -1));
+						if (executeMove(move2)) {
+							List<Pair<Integer, Integer>> move = new LinkedList<Pair<Integer, Integer>>();
+							move.add(move1);
+							move.add(move2);
+							if (longestSequence != 2) {
+								legalMoves.clear();
+							}
+							legalMoves.add(move);
+							
+							longestSequence = 2;
+							biggestDice = 7;
+							
+							for (int idx = 0; idx <= 23; ++idx) {
+								board[idx] = new int[] {currBoard[idx][0], currBoard[idx][1]};
+							}
+							whiteChipsCaptured = currWhiteCaptured;
+							blackChipsCaptured = currBlackCaptured;
+							offboard = new Pair<Integer, Integer>(currOffboard.getFirst(), currOffboard.getLast());
+						}
+						else {
+							if (longestSequence == 2 || (dice.getFirst() < biggestDice)) {
+								continue;
+							}
+							List<Pair<Integer, Integer>> move = new LinkedList<Pair<Integer, Integer>>();
+							move.add(move1);
+							biggestDice = dice.getFirst();
+							longestSequence = 1;
+							legalMoves.add(move);
+						}
+        	    	}
+	    			for (int idx = 0; idx <= 23; ++idx) {
+						board[idx] = new int[] {startBoard[idx][0], startBoard[idx][1]};
+					}
+					whiteChipsCaptured = startWhiteCaptured;
+					blackChipsCaptured = startBlackCaptured;
+					offboard = new Pair<Integer, Integer>(startOffboard.getFirst(), startOffboard.getLast());
+    			}
+    		}
+    		
+    		for (int i = 0; i <= 24; ++i) {
+    			if (i < 24 && board[i][1] != -1) {
+    				continue;
+    			}
+	    		Pair<Integer, Integer> move1 = new Pair<Integer, Integer>(i, Math.max(i - dice.getLast(), -1));
+    			if (executeMove(move1)) {
+    				int[][] currBoard = new int[24][2];
+        	    	int currWhiteCaptured = whiteChipsCaptured;
+        	    	int currBlackCaptured = blackChipsCaptured;
+        	    	Pair<Integer, Integer> currOffboard = new Pair<Integer, Integer>(offboard.getFirst(), offboard.getLast());
+        	    	for (int k = 0; k <= 23; ++k) {
+        	    		currBoard[k] = new int[] {board[k][0], board[k][1]};
+        	    	}
+        	    	for (int j = 0; j <= 24; ++j) {
+        	    		if (j < 24 && board[j][1] != -1) {
+            				continue;
+            			}
+        	    		Pair<Integer, Integer> move2 = new Pair<Integer, Integer>(j, Math.max(j - dice.getFirst(), -1));
+						if (executeMove(move2)) {
+							List<Pair<Integer, Integer>> move = new LinkedList<Pair<Integer, Integer>>();
+							move.add(move1);
+							move.add(move2);
+							if (longestSequence != 2) {
+								legalMoves.clear();
+							}
+							legalMoves.add(move);
+							
+							longestSequence = 2;
+							biggestDice = 7;
+							
+							for (int idx = 0; idx <= 23; ++idx) {
+								board[idx] = new int[] {currBoard[idx][0], currBoard[idx][1]};
+							}
+							whiteChipsCaptured = currWhiteCaptured;
+							blackChipsCaptured = currBlackCaptured;
+							offboard = new Pair<Integer, Integer>(currOffboard.getFirst(), currOffboard.getLast());
+						}
+						else {
+							if (longestSequence == 2 || (dice.getLast() < biggestDice)) {
+								continue;
+							}
+							List<Pair<Integer, Integer>> move = new LinkedList<Pair<Integer, Integer>>();
+							move.add(move1);
+							biggestDice = dice.getLast();
+							longestSequence = 1;
+							legalMoves.add(move);
+						}
+        	    	}
+	    			for (int idx = 0; idx <= 23; ++idx) {
+						board[idx] = new int[] {startBoard[idx][0], startBoard[idx][1]};
+					}
+					whiteChipsCaptured = startWhiteCaptured;
+					blackChipsCaptured = startBlackCaptured;
+					offboard = new Pair<Integer, Integer>(startOffboard.getFirst(), startOffboard.getLast());
+    			}
+    		}
+    	}
+       return legalMoves;
     }
 
     private void removeChip(int pos) {
@@ -135,17 +377,21 @@ public class Board {
     }
 
     /**
+<<<<<<< HEAD
+=======
      * TODO - Implement moving the chips off the board in the final sector and
      * placing captured chips on the board.
+>>>>>>> branch 'main' of git@github.com:urhprimozic/Backgammon.git
      * 
      * @param move Pair<Integer, Integer> {starting position, final position} if
      *             move.getLast() >= 24, we try to bear off
      * @return true if move was executed, false otherwise
      */
-    public boolean executeMove(Pair<Integer, Integer> move) {
-        int start = move.getFirst();
-        int end = move.getLast();
-        String errorMsg = "ERROR - could not move chip from " + String.valueOf(start) + " to " + String.valueOf(end);
+
+	public boolean executeMove(Pair<Integer, Integer> move) {
+		int start = move.getFirst();
+		int end = move.getLast();
+        // String errorMsg = "ERROR - could not move chip from " + String.valueOf(start) + " to " + String.valueOf(end);
 
         if (whiteChipsCaptured != 0) {
             whiteFinal = false;
@@ -183,156 +429,150 @@ public class Board {
          */
 
         if (start <= -2) {
-            System.out.println(errorMsg);
-            System.out.println("Starting position too small!");
+        	// System.out.println(errorMsg);
+            // System.out.println("Starting position too small!");
             return false;
         }
         if (start >= 25) {
-            System.out.println(errorMsg);
-            System.out.println("Starting position too large!");
+        	// System.out.println(errorMsg);
+            // System.out.println("Starting position too large!");
             return false;
         }
         if (end <= -2) {
-            System.out.println(errorMsg);
-            System.out.println("End position too small!");
+        	// System.out.println(errorMsg);
+            // System.out.println("End position too small!");
             return false;
         }
         if (start >= 25) {
-            System.out.println(errorMsg);
-            System.out.println("End position too large!");
+        	// System.out.println(errorMsg);
+            // System.out.println("End position too large!");
             return false;
         }
 
         // special move
         // placing a captured chip
         if (start == -1 || start == 24) {
-            if (board[end][0] >= 5) {
-                System.out.println(errorMsg);
-                System.out.println("Final position is full!");
-                return false;
-            }
-            if (start == -1 && whiteChipsCaptured >= 1) {
-                // if there's a black chip, we need to do some work
-                if (board[end][1] == -1) {
-                    if (board[end][0] >= 2) {
-                        System.out.println(errorMsg);
-                        System.out.println("There is more than one chip of different color in the final position!");
+        	if (start == -1 && whiteChipsCaptured >= 1) {
+        		// if there's a black chip, we need to do some work
+        		if (board[end][1] == -1) {
+        			if (board[end][0] >= 2) {
+        				// System.out.println(errorMsg);
+                        // System.out.println("There is more than one chip of different color in the final position!");
                         return false;
-                    } else {
-                        board[end][0] = 1;
-                        board[end][1] = 1;
-                        blackChipsCaptured += 1;
-                        whiteChipsCaptured -= 1;
-                        System.out
-                                .println("Placed a chip from " + String.valueOf(start) + " to " + String.valueOf(end));
+        			}
+        			else {
+        				board[end][0] = 1;
+        				board[end][1] = 1;
+        				blackChipsCaptured += 1;
+        				whiteChipsCaptured -= 1;
+        				// System.out.println("Placed a chip from " + String.valueOf(start) + " to " + String.valueOf(end));
                         return true;
-                    }
-                }
-                // otherwise we just place
-                else {
-                    board[end][0] += 1;
-                    board[end][1] = 1;
-                    whiteChipsCaptured -= 1;
-                    System.out.println("Placed a chip from " + String.valueOf(start) + " to " + String.valueOf(end));
+        			}
+        		}
+        		// otherwise we just place
+        		else {
+        			board[end][0] += 1;
+        			board[end][1] = 1;
+        			whiteChipsCaptured -= 1;
+        			// System.out.println("Placed a chip from " + String.valueOf(start) + " to " + String.valueOf(end));
                     return true;
-                }
-            } else if (start == 24 && blackChipsCaptured >= 1) {
-                // if there's a white chip, we need to do some work
-                if (board[end][1] == 1) {
-                    if (board[end][0] >= 2) {
-                        System.out.println(errorMsg);
-                        System.out.println("There is more than one chip of different color in the final position!");
+        		}
+        	}
+        	else if (start == 24 && blackChipsCaptured >= 1) {
+        		// if there's a white chip, we need to do some work
+        		if (board[end][1] == 1) {
+        			if (board[end][0] >= 2) {
+        				// System.out.println(errorMsg);
+                        // System.out.println("There is more than one chip of different color in the final position!");
                         return false;
-                    } else {
-                        board[end][0] = 1;
-                        board[end][1] = -1;
-                        whiteChipsCaptured += 1;
-                        blackChipsCaptured -= 1;
-                        System.out
-                                .println("Placed a chip from " + String.valueOf(start) + " to " + String.valueOf(end));
+        			}
+        			else {
+        				board[end][0] = 1;
+        				board[end][1] = -1;
+        				whiteChipsCaptured += 1;
+        				blackChipsCaptured -= 1;
+        				// System.out.println("Placed a chip from " + String.valueOf(start) + " to " + String.valueOf(end));
                         return true;
-                    }
-                }
-                // otherwise we just place
-                else {
-                    board[end][0] += 1;
-                    board[end][1] = -1;
-                    blackChipsCaptured -= 1;
-                    System.out.println("Placed a chip from " + String.valueOf(start) + " to " + String.valueOf(end));
+        			}
+        		}
+        		// otherwise we just place
+        		else {
+        			board[end][0] += 1;
+        			board[end][1] = -1;
+        			blackChipsCaptured -= 1;
+        			// System.out.println("Placed a chip from " + String.valueOf(start) + " to " + String.valueOf(end));
                     return true;
-                }
-            } else {
-                System.out.println(errorMsg);
-                System.out.println("There are no captured chips to place!");
+        		}
+        	}
+        	else {
+        		// System.out.println(errorMsg);
+                // System.out.println("There are no captured chips to place!");
                 return false;
             }
         }
         // taking a chip off the board
         if (end == -1 || end == 24) {
-            if (board[start][0] <= 0) {
-                System.out.println(errorMsg);
-                System.out.println("Starting position is empty!");
+        	if (board[start][0] <= 0){
+                // System.out.println(errorMsg);
+                //System.out.println("Starting position is empty!");
                 return false;
-            }
-            if (end == 24) {
-                if (!whiteFinal) {
-                    System.out.println(errorMsg);
-                    System.out.println("Not all white chips are in the final sector!");
-                    return false;
-                } else {
-                    removeChip(start);
-                    offboard.setFirst(offboard.getFirst() + 1);
-                    System.out.println("Placed a chip from " + String.valueOf(start) + " to " + String.valueOf(end));
-                    return true;
-                }
-            }
-            if (end == -1) {
-                if (!blackFinal) {
-                    System.out.println(errorMsg);
-                    System.out.println("Not all black chips are in the final sector!");
-                    return false;
-                } else {
-                    removeChip(start);
-                    offboard.setLast(offboard.getLast() + 1);
-                    System.out.println("Placed a chip from " + String.valueOf(start) + " to " + String.valueOf(end));
-                    return true;
-                }
-            }
+    	    }
+        	if (end == 24) {
+        		if (!whiteFinal) {
+        			// System.out.println(errorMsg);
+        			// System.out.println("Not all white chips are in the final sector!");
+        			return false;
+        		}
+        		else {
+        			removeChip(start);
+        			offboard.setFirst(offboard.getFirst() + 1);
+        			// System.out.println("Placed a chip from " + String.valueOf(start) + " to " + String.valueOf(end));
+                	return true;
+        		}
+        	}
+        	if (end == -1) {
+        		if (!blackFinal) {
+        			// System.out.println(errorMsg);
+        			// System.out.println("Not all black chips are in the final sector!");
+        			return false;
+        		}
+        		else {
+        			removeChip(start);
+        			offboard.setLast(offboard.getLast() + 1);
+        			// System.out.println("Placed a chip from " + String.valueOf(start) + " to " + String.valueOf(end));
+        			return true;
+        		}
+        	}
         }
 
         // regular move
-        // checks if the move is legal
-        if (board[start][0] <= 0) {
-            System.out.println(errorMsg);
-            System.out.println("Starting position is empty!");
+        //checks if the move is legal
+        if (board[start][0] <= 0){
+            // System.out.println(errorMsg);
+            // System.out.println("Starting position is empty!");
             return false;
-        }
-        if (board[end][0] >= 5) {
-            System.out.println(errorMsg);
-            System.out.println("Final position is full!");
-            return false;
-        }
+	    }
         // enough chips in the beginning, enough space in the end
         // check for captured chips
         if ((board[start][1] == 1 && whiteChipsCaptured != 0) || (board[start][1] == -1 && blackChipsCaptured != 0)) {
-        	System.out.println(errorMsg);
-        	System.out.println("Captured chips need to be played first!");
+        	// System.out.println(errorMsg);
+        	// System.out.println("Captured chips need to be played first!");
         	return false;
         }
         
         // end is empty
         if (board[end][0] == 0) {
-            board[end][0] = 1;
-            board[end][1] = board[start][1];
-            removeChip(start);
-            System.out.println("Placed a chip from " + String.valueOf(start) + " to " + String.valueOf(end));
+        	board[end][0] = 1;
+        	board[end][1] = board[start][1];
+        	removeChip(start);
+        	// System.out.println("Placed a chip from " + String.valueOf(start) + " to " + String.valueOf(end));
             return true;
         }
         // end is same color
         else if (board[end][1] == board[start][1]) {
             board[end][0] += 1;
             removeChip(start);
-            System.out.println("Placed a chip from " + String.valueOf(start) + " to " + String.valueOf(end));
+            // System.out.println("Placed a chip from " + String.valueOf(start) + " to " + String.valueOf(end));
             return true;
         }
         // end is different color
@@ -346,12 +586,12 @@ public class Board {
                 board[end][0] = 1;// we have exactly 1 chip here
                 board[end][1] = board[start][1];// of the same color
                 removeChip(start);
-
-                System.out.println("Placed a chip from " + String.valueOf(start) + " to " + String.valueOf(end));
+                // System.out.println("Placed a chip from " + String.valueOf(start) + " to " + String.valueOf(end));
                 return true;
-            } else {
-                System.out.println(errorMsg);
-                System.out.println("There is more than one chip of different color in the final position!");
+            }
+            else{
+                // System.out.println(errorMsg);
+                // System.out.println("There is more than one chip of different color in the final position!");
                 return false;
             }
         }

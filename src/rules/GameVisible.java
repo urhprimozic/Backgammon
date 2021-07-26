@@ -25,7 +25,7 @@ public class GameVisible {
 	public boolean playMove(Pair<Integer, Integer> move) {
 		if (board.executeMove(move)) {
 			movesMade++;
-			if (movesMade == 2) {
+			if (movesMade == 2) { // will have to be changed to max possible moves in the position
 				player *= -1;
 				movesMade = 0;
 			}
