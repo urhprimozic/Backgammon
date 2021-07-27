@@ -69,8 +69,6 @@ public class GamePanel extends JPanel implements MouseListener, MouseMotionListe
 	private int activeChipDy;
 	private int activeChipColor;
 
-	private boolean diceRolled;
-
 	private PopUp noGame;
 
 	public GamePanel() {
@@ -81,7 +79,6 @@ public class GamePanel extends JPanel implements MouseListener, MouseMotionListe
 		this.addMouseMotionListener(this);
 		// this.addMouseMotionListener(this);
 		activeChip = false;
-		diceRolled = false;
 
 		// popups:
 		noGame = new PopUp("Dobrodošli v igri Backgammon", "Izberite igro v meniju", this);
@@ -355,7 +352,7 @@ public class GamePanel extends JPanel implements MouseListener, MouseMotionListe
 					g2.setColor(COLOR_B);
 
 				// drawing chips
-				for (int j = 1; j <= num; j++) {
+				for (int j = 1; j <= Math.min(num, 5); j++) {
 					int x = triangleCoordinates(i)[0] + (int) Math.round((triangle_w - chipSize()) / 2.);
 					int y = triangleCoordinates(i)[1];
 
@@ -374,12 +371,40 @@ public class GamePanel extends JPanel implements MouseListener, MouseMotionListe
 
 					// we highlight the chips that can be moved
 					// TODO: only legal moves for the given dice roll
-					if (Leader.diceRolled && color == Leader.gameVisible.player && j == num
+					if (Leader.diceRolled && color == Leader.gameVisible.player && j == Math.min(num, 5)
 							&& (!activeChip || i != activeChipIndex)) {
 						g2.setColor(COLOR_OUTLINE_HIGHLITED);
 					} else
 						g2.setColor(COLOR_OUTLINE);
 					g2.drawOval(x, y, chipSize(), chipSize());
+				}
+				// when there are too many chips in one spot
+				if (num >= 6) {
+					if (color == 1) {
+						g2.setColor(TEXT_B);
+					}
+					else {
+						g2.setColor(TEXT_W);
+					}
+					g2.setFont(g2.getFont().deriveFont((float) fontSize()));
+					// top row
+					if (i >= 12) {
+						if (num - 4 < 10) {
+							g2.drawString(String.valueOf(num - 4), triangleCoordinates(i)[0] + (chipSize() * 7 / 24) + ((int) (getWidth() * TRIANGLE_WIDTH) - chipSize()), triangleCoordinates(i)[1] + chipSize() * 3 / 4);
+						}
+						else {
+							g2.drawString(String.valueOf(num - 4), triangleCoordinates(i)[0] + (chipSize() / 12) + ((int) (getWidth() * TRIANGLE_WIDTH) - chipSize()), triangleCoordinates(i)[1] + chipSize() * 3 / 4);
+						}
+					}
+					// bottom row
+					else {
+						if (num - 4 < 10) {
+							g2.drawString(String.valueOf(num - 4), triangleCoordinates(i)[0] + (chipSize() * 7 / 24) + ((int) (getWidth() * TRIANGLE_WIDTH) - chipSize()), triangleCoordinates(i)[1] - chipSize() / 4);
+						}
+						else {
+							g2.drawString(String.valueOf(num - 4), triangleCoordinates(i)[0] + (chipSize() / 12) + ((int) (getWidth() * TRIANGLE_WIDTH) - chipSize()), triangleCoordinates(i)[1] - chipSize() / 4);
+						}
+					}
 				}
 			}
 
@@ -466,9 +491,9 @@ public class GamePanel extends JPanel implements MouseListener, MouseMotionListe
 					int x0 = triangleCoordinates(i)[0] + (int) Math.round((triangle_w - chipSize()) / 2.);
 					int y0 = triangleCoordinates(i)[1];
 					if (i + 1 >= 13)
-						y0 += (num - 1) * chipSize();
+						y0 += (Math.min(num, 5) - 1) * chipSize();
 					else
-						y0 -= num * chipSize();
+						y0 -= Math.min(num, 5) * chipSize();
 
 					// if the chip was clicked:
 					int dw = chipSize() / 2;
@@ -549,8 +574,7 @@ public class GamePanel extends JPanel implements MouseListener, MouseMotionListe
 			if (x >= rollPosition()[0] && x <= rollPosition()[0] + rollSize()[0] &&
 				y >= rollPosition()[1] && y <= rollPosition()[1] + rollSize()[1])
 			{
-				gameVisible.board.rollDice();
-				Leader.diceRolled = true;
+				Leader.rollDice();
 				
 				System.out.println("GUI: Legal moves for player " + gameVisible.player);
 				List<List<Pair<Integer, Integer>>> legal = gameVisible.board.getLegalMoves(gameVisible.player, gameVisible.board.dice);
@@ -581,9 +605,18 @@ public class GamePanel extends JPanel implements MouseListener, MouseMotionListe
 					|| (y < woodSize()[1] || y > getHeight() - woodSize()[1])) {
 				// wood - try to drop one there
 				System.out.println("Bearing off..");
-				boolean success = gameVisible.playMove(new Pair<Integer, Integer>(activeChipIndex, 24));
+				boolean success = false;
+				if (activeChipColor == 1) {
+					success = Leader.playMove(new Pair<Integer, Integer>(activeChipIndex, 24));
+				}
+				else {
+					success = Leader.playMove(new Pair<Integer, Integer>(activeChipIndex, -1));
+				}
 				if (success) {
 					System.out.println("");
+					if (gameVisible.movesMade == 0) {
+						Leader.diceRolled = false;
+					}
 				}
 
 			} else if ((x < triangleCoordinates(5)[0] && x > triangleCoordinates(6)[0] + (TRIANGLE_WIDTH * getWidth()))
@@ -604,7 +637,7 @@ public class GamePanel extends JPanel implements MouseListener, MouseMotionListe
 				if (activeChipIndex == i) {
 					return;
 				}
-				boolean success = gameVisible.playMove(new Pair<Integer, Integer>(activeChipIndex, i));
+				boolean success = Leader.playMove(new Pair<Integer, Integer>(activeChipIndex, i));
 				if (success) {
 					System.out.println("GUI: Moved chip from triangle " + activeChipIndex + " to triangle " + i);
 					if (gameVisible.movesMade == 0) {
@@ -621,7 +654,7 @@ public class GamePanel extends JPanel implements MouseListener, MouseMotionListe
 				if (activeChipIndex == i) {
 					return;
 				}
-				boolean success = gameVisible.playMove(new Pair<Integer, Integer>(activeChipIndex, i));
+				boolean success = Leader.playMove(new Pair<Integer, Integer>(activeChipIndex, i));
 				if (success) {
 					System.out.println("GUI: Moved chip from triangle " + activeChipIndex + " to triangle " + i);
 					if (gameVisible.movesMade == 0) {
