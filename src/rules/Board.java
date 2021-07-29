@@ -377,11 +377,8 @@ public class Board {
     }
 
     /**
-<<<<<<< HEAD
-=======
      * TODO - Implement moving the chips off the board in the final sector and
      * placing captured chips on the board.
->>>>>>> branch 'main' of git@github.com:urhprimozic/Backgammon.git
      * 
      * @param move Pair<Integer, Integer> {starting position, final position} if
      *             move.getLast() >= 24, we try to bear off
