@@ -1,4 +1,4 @@
-package inteligenca;
+package ai;
 
 public class MCTSMapEntry {
 	public int N;
