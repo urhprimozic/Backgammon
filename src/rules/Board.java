@@ -114,8 +114,6 @@ public class Board {
     }
 	
 	/**
-     * TODO - Doubles mean 4 moves
-     * 
      * @param   player int
      * @param   dice Pair<Integer, Integer> {first dice throw, second dice throw}
      * @return List of legal moves. Move - Pair<Integer, Integer> {starting position, final position}
@@ -211,7 +209,102 @@ public class Board {
     			}
     		}
 		}
-       return legalMoves;
+		
+		if (dice.getFirst() != dice.getLast() || longestSequence != 2) {
+			return legalMoves;
+		}
+		
+		List<List<Pair<Integer, Integer>>> finalLegalMoves = new LinkedList<List<Pair<Integer, Integer>>>();
+		
+		for (int a = 0; a < legalMoves.size(); ++a) {
+			List<Pair<Integer, Integer>> moveOrder = legalMoves.get(a);
+			
+			for (Pair<Integer, Integer> move : moveOrder) {
+				executeMove(move);
+			}
+			
+			int[][] midBoard = new int[24][2];
+        	int midWhiteCaptured = whiteChipsCaptured;
+        	int midBlackCaptured = blackChipsCaptured;
+        	Pair<Integer, Integer> midOffboard = new Pair<Integer, Integer>(offboard.getFirst(), offboard.getLast());
+        	for (int i = 0; i <= 23; ++i) {
+        		midBoard[i] = new int[] {board[i][0], board[i][1]};
+        	}
+        	
+        	for (int i = -1; i <= 24; ++i) {
+    			if (!isSensibleStart(i, player)) {
+    				continue;
+    			}
+	    		Pair<Integer, Integer> move1 = new Pair<Integer, Integer>(i, getEndTriangle(i, dice.getFirst(), player));
+    			if (executeMove(move1)) {
+    				int[][] currBoard = new int[24][2];
+        	    	int currWhiteCaptured = whiteChipsCaptured;
+        	    	int currBlackCaptured = blackChipsCaptured;
+        	    	Pair<Integer, Integer> currOffboard = new Pair<Integer, Integer>(offboard.getFirst(), offboard.getLast());
+        	    	for (int k = 0; k <= 23; ++k) {
+        	    		currBoard[k] = new int[] {board[k][0], board[k][1]};
+        	    	}
+        	    	for (int j = -1; j <= 24; ++j) {
+        	    		if (!isSensibleStart(j, player)) {
+            				continue;
+            			}
+        	    		Pair<Integer, Integer> move2 = new Pair<Integer, Integer>(j, getEndTriangle(j, dice.getLast(), player));
+						if (executeMove(move2)) {
+							List<Pair<Integer, Integer>> finalMoveOrder = new LinkedList<Pair<Integer, Integer>>();
+							for (Pair<Integer, Integer> move : moveOrder) {
+								finalMoveOrder.add(move);
+							}
+							
+							finalMoveOrder.add(move1);
+							finalMoveOrder.add(move2);
+							if (longestSequence != 4) {
+								finalLegalMoves.clear();
+							}
+							finalLegalMoves.add(finalMoveOrder);
+							longestSequence = 4;
+							
+							for (int idx = 0; idx <= 23; ++idx) {
+								board[idx] = new int[] {currBoard[idx][0], currBoard[idx][1]};
+							}
+							whiteChipsCaptured = currWhiteCaptured;
+							blackChipsCaptured = currBlackCaptured;
+							offboard = new Pair<Integer, Integer>(currOffboard.getFirst(), currOffboard.getLast());
+						}
+						else {
+							if (longestSequence > 3) {
+								continue;
+							}
+							List<Pair<Integer, Integer>> finalMoveOrder = new LinkedList<Pair<Integer, Integer>>();
+							for (Pair<Integer, Integer> move : moveOrder) {
+								finalMoveOrder.add(move);
+							}
+							finalMoveOrder.add(move1);
+							longestSequence = 3;
+							finalLegalMoves.add(finalMoveOrder);
+						}
+        	    	}
+	    			for (int idx = 0; idx <= 23; ++idx) {
+						board[idx] = new int[] {midBoard[idx][0], midBoard[idx][1]};
+					}
+					whiteChipsCaptured = midWhiteCaptured;
+					blackChipsCaptured = midBlackCaptured;
+					offboard = new Pair<Integer, Integer>(midOffboard.getFirst(), midOffboard.getLast());
+    			}
+    		}
+        	
+        	for (int idx = 0; idx <= 23; ++idx) {
+				board[idx] = new int[] {startBoard[idx][0], startBoard[idx][1]};
+			}
+			whiteChipsCaptured = startWhiteCaptured;
+			blackChipsCaptured = startBlackCaptured;
+			offboard = new Pair<Integer, Integer>(startOffboard.getFirst(), startOffboard.getLast());
+		}
+		if (finalLegalMoves.size() == 0) {
+			return legalMoves;
+		}
+		else {
+			return finalLegalMoves;
+		}
     }
 
     private void removeChip(int pos) {

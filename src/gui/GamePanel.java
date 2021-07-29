@@ -24,8 +24,8 @@ public class GamePanel extends JPanel implements MouseListener, MouseMotionListe
 	// Constants for gui
 	// sizes
 	private final static double CHIP_SIZE = 75. / 1024.;
-	private final static double WOOD_WIDTH = 42. / 1024.;// 36. / 1024.;
-	private final static double WOOD_HEIGHT = 42. / 1024.;// 36. / 878.;
+	// private final static double WOOD_WIDTH = 42. / 1024.;// 36. / 1024.;
+	// private final static double WOOD_HEIGHT = 42. / 1024.;// 36. / 878.;
 	private final static double TRIANGLE_WIDTH = 70. / 1024.;
 
 	// private final static double TRIANGLE_HEIGHT = 184. / 1024.;
