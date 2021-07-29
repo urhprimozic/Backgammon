@@ -123,7 +123,7 @@ public class MainFrame extends JFrame implements ActionListener {
 	}
 
 	public void osveziGUI() {
-		if (Leader.gameVisible == null) {
+		if (Leader.board == null) {
 			status.setText("Igra ni v teku.");
 		}
 		// else {
