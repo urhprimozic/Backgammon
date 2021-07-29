@@ -32,7 +32,8 @@ public class Hevristic {
      * @param board , dice- current dice throws
      * @return
      */
-    public Pair<float[], Float> get(Board board, Pair<Integer, Integer> dice, int player){
+    public Pair<float[], Float> get(Board board, Pair<Integer, Integer> dice){
+        int player = 1;
         List<List<Pair<Integer, Integer>>> legalMoves = board.getLegalMoves(player, dice);
         
         // propability  - TODO mjbi daš trapastim potezam, aka da je slabo postavt enga samega na trikontik

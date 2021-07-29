@@ -1,5 +1,6 @@
 package rules;
 
+import utils.Pair;
 
 public class Game {
 	
@@ -69,10 +70,22 @@ public class Game {
 	//	return valids;
 	//}
 	
-	public static Boolean getGameEnded(Board b, int player) {
-		//TODO
-		return false;
+	public static  float  getGameEnded(Board b, int player) {
+		//TODO 
+		return (float) 0.;
 	}
+
+    public static int[] getValidMoves(Board board, int i) {
+        return null;
+    }
+
+	public static Pair<Board, Integer> getNextState(Board board, int i, int a) {
+		return null;
+	}
+
+    public static Board getCannonicalForm(Board nextBoard, int nextPlayer) {
+        return null;
+    }
 	
 	//public static Board getCannonicalForm(Board b, int player) {
 //TODO

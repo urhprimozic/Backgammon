@@ -26,7 +26,7 @@ public class MonteCarloTreeSearch {
 	
 	public MonteCarloTreeSearch(Hevristic hevristic , int p) {
 		this.hevristic = hevristic;
-		this.nnet = nnet;
+	//	this.nnet = nnet;
 		this.gamePlayer = p;
 		
 		stateActionMap = new HashMap<Pair<String, Integer>, Pair<Float, Integer>>();
@@ -43,25 +43,25 @@ public class MonteCarloTreeSearch {
 		stateMap.keySet().removeIf(e -> calcDepth(e) < depth);
 	}
 	
-	public float[] getActionProb(Board board) {
-		return getActionProb(board, 1);
+	public float[] getActionProb(Board board, Pair<Integer, Integer> dice) {
+		return getActionProb(board,dice,  1);
 	}
 	
-	public float[] getActionProb(Board board, double temp) {
+	public float[] getActionProb(Board board, Pair<Integer, Integer> dice,double temp) {
 		
-		Board canonicalBoard = new Board(board.n);
-		for (int i = 0; i < board.n; ++i) {
-			for (int j = 0; j < board.n; ++j) {
-				canonicalBoard.plosca[i][j] = board.plosca[i][j] * -gamePlayer;
-			}
-		}		
+		Board canonicalBoard = new Board();
+		for (int i = 0; i<24;i++){
+			canonicalBoard.board[i][0] = board.board[i][0];
+			canonicalBoard.board[i][1] = board.board[i][1] * -gamePlayer;
+
+		}
 		
 		depth += 1;
 		long start = System.currentTimeMillis();
 		int n = 0;
 		while (start + timeMilli > System.currentTimeMillis()) {
 //		while (n < 10000) {
-			search(canonicalBoard);
+			search(canonicalBoard, dice);
 			n++;
 		}
 		
@@ -88,7 +88,7 @@ public class MonteCarloTreeSearch {
 		return probs;
 	}
 	
-	public float search(Board board) {
+	public float search(Board board, Pair<Integer, Integer> dice) {
 		String s = Game.stringRepresentation(board);
 		
 		MCTSMapEntry entry = stateMap.get(s);
@@ -105,7 +105,7 @@ public class MonteCarloTreeSearch {
 			return -entry.E;
 		}
 		if (entry.P == null) {
-			Pair<float[], Float> result = nnet.predict(board);
+			Pair<float[], Float> result =hevristic.get(board, dice); // nnet.predict(board);
 			entry.P = result.getFirst();
 			float v = result.getLast();
 			
@@ -168,7 +168,7 @@ public class MonteCarloTreeSearch {
 		int nextPlayer = result.getLast();
 		nextBoard = Game.getCannonicalForm(nextBoard, nextPlayer);
 		
-		float v = search(nextBoard);
+		float v = search(nextBoard, dice);
 		
 		Pair<String, Integer> bestCombo = new Pair<String, Integer>(s, a);
 		Pair<Float, Integer> saVal = stateActionMap.get(bestCombo);
