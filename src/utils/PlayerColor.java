@@ -23,8 +23,8 @@ public enum PlayerColor {
 	public PlayerColor fromInt(int c){
 		switch (c) {
 		case -1: return B;
-		case 0: return W;
-		case 1: return Empty;
+		case 1: return W;
+		case 0: return Empty;
 		default: assert false; return null;
 		}
 	}

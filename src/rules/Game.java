@@ -70,9 +70,17 @@ public class Game {
 	//	return valids;
 	//}
 	
-	public static  float  getGameEnded(Board b, int player) {
-		//TODO 
-		return (float) 0.;
+	public static double getGameEnded(Board b, int player) {
+		if (b.offboard.getFirst() == 15) {
+			return player;
+		}
+		else if (b.offboard.getLast() == 15) {
+			return -player;
+		}
+		else {
+			return 0;
+		}
+		
 	}
 
     public static int[] getValidMoves(Board board, int i) {

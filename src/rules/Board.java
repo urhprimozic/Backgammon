@@ -1,8 +1,10 @@
 package rules;
 
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
 
 import utils.Pair;
 
@@ -94,15 +96,24 @@ public class Board {
         dice.setFirst(rand.nextInt(6) + 1);
         dice.setLast(rand.nextInt(6) + 1);
     }
-
-    public void clearDice() {
-        dice.setFirst(null);
-        dice.setLast(null);
+    
+    private boolean isSensibleStart(int idx, int player) {
+    	if (idx == -1) {
+    		return player == 1;
+    	}
+    	else if (idx == 24) {
+    		return player == -1;
+    	}
+    	else {
+    		return board[idx][1] == player;
+    	}
+    }
+    
+    private int getEndTriangle(int start, int dice, int player) {
+    	return Math.max(Math.min(start + player*dice, 24), -1);
     }
 	
 	/**
-     * TODO - Implementation
-     * 
      * @param   player int
      * @param   dice Pair<Integer, Integer> {first dice throw, second dice throw}
      * @return List of legal moves. Move - Pair<Integer, Integer> {starting position, final position}
@@ -136,12 +147,16 @@ public class Board {
     	int longestSequence = 0;
     	int biggestDice = 0;
     	
-    	if (player == 1) {
-    		for (int i = -1; i <= 23; ++i) {
-    			if (i >= 0 && board[i][1] != 1) {
+    	Set<Pair<Integer, Integer>> diceOrders = new HashSet<Pair<Integer, Integer>>();
+    	diceOrders.add(dice);
+    	diceOrders.add(new Pair<Integer, Integer>(dice.getLast(), dice.getFirst()));
+    	
+		for (Pair<Integer, Integer> diceOrder : diceOrders) {
+    		for (int i = -1; i <= 24; ++i) {
+    			if (!isSensibleStart(i, player)) {
     				continue;
     			}
-	    		Pair<Integer, Integer> move1 = new Pair<Integer, Integer>(i, Math.min(i + dice.getFirst(), 24));
+	    		Pair<Integer, Integer> move1 = new Pair<Integer, Integer>(i, getEndTriangle(i, diceOrder.getFirst(), player));
     			if (executeMove(move1)) {
     				int[][] currBoard = new int[24][2];
         	    	int currWhiteCaptured = whiteChipsCaptured;
@@ -150,11 +165,11 @@ public class Board {
         	    	for (int k = 0; k <= 23; ++k) {
         	    		currBoard[k] = new int[] {board[k][0], board[k][1]};
         	    	}
-        	    	for (int j = -1; j <= 23; ++j) {
-        	    		if (j >= 0 && board[j][1] != 1) {
+        	    	for (int j = -1; j <= 24; ++j) {
+        	    		if (!isSensibleStart(j, player)) {
             				continue;
             			}
-        	    		Pair<Integer, Integer> move2 = new Pair<Integer, Integer>(j, Math.min(j + dice.getLast(), 24));
+        	    		Pair<Integer, Integer> move2 = new Pair<Integer, Integer>(j, getEndTriangle(j, diceOrder.getLast(), player));
 						if (executeMove(move2)) {
 							List<Pair<Integer, Integer>> move = new LinkedList<Pair<Integer, Integer>>();
 							move.add(move1);
@@ -175,12 +190,12 @@ public class Board {
 							offboard = new Pair<Integer, Integer>(currOffboard.getFirst(), currOffboard.getLast());
 						}
 						else {
-							if (longestSequence == 2 || (dice.getFirst() < biggestDice)) {
+							if (longestSequence == 2 || (diceOrder.getFirst() < biggestDice)) {
 								continue;
 							}
 							List<Pair<Integer, Integer>> move = new LinkedList<Pair<Integer, Integer>>();
 							move.add(move1);
-							biggestDice = dice.getFirst();
+							biggestDice = diceOrder.getFirst();
 							longestSequence = 1;
 							legalMoves.add(move);
 						}
@@ -193,12 +208,34 @@ public class Board {
 					offboard = new Pair<Integer, Integer>(startOffboard.getFirst(), startOffboard.getLast());
     			}
     		}
-    		
-    		for (int i = -1; i <= 23; ++i) {
-    			if (i >= 0 && board[i][1] != 1) {
+		}
+		
+		if (dice.getFirst() != dice.getLast() || longestSequence != 2) {
+			return legalMoves;
+		}
+		
+		List<List<Pair<Integer, Integer>>> finalLegalMoves = new LinkedList<List<Pair<Integer, Integer>>>();
+		
+		for (int a = 0; a < legalMoves.size(); ++a) {
+			List<Pair<Integer, Integer>> moveOrder = legalMoves.get(a);
+			
+			for (Pair<Integer, Integer> move : moveOrder) {
+				executeMove(move);
+			}
+			
+			int[][] midBoard = new int[24][2];
+        	int midWhiteCaptured = whiteChipsCaptured;
+        	int midBlackCaptured = blackChipsCaptured;
+        	Pair<Integer, Integer> midOffboard = new Pair<Integer, Integer>(offboard.getFirst(), offboard.getLast());
+        	for (int i = 0; i <= 23; ++i) {
+        		midBoard[i] = new int[] {board[i][0], board[i][1]};
+        	}
+        	
+        	for (int i = -1; i <= 24; ++i) {
+    			if (!isSensibleStart(i, player)) {
     				continue;
     			}
-	    		Pair<Integer, Integer> move1 = new Pair<Integer, Integer>(i, Math.min(i + dice.getLast(), 24));
+	    		Pair<Integer, Integer> move1 = new Pair<Integer, Integer>(i, getEndTriangle(i, dice.getFirst(), player));
     			if (executeMove(move1)) {
     				int[][] currBoard = new int[24][2];
         	    	int currWhiteCaptured = whiteChipsCaptured;
@@ -207,22 +244,24 @@ public class Board {
         	    	for (int k = 0; k <= 23; ++k) {
         	    		currBoard[k] = new int[] {board[k][0], board[k][1]};
         	    	}
-        	    	for (int j = -1; j <= 23; ++j) {
-        	    		if (j >= 0 && board[j][1] != 1) {
+        	    	for (int j = -1; j <= 24; ++j) {
+        	    		if (!isSensibleStart(j, player)) {
             				continue;
             			}
-        	    		Pair<Integer, Integer> move2 = new Pair<Integer, Integer>(j, Math.min(j + dice.getFirst(), 24));
+        	    		Pair<Integer, Integer> move2 = new Pair<Integer, Integer>(j, getEndTriangle(j, dice.getLast(), player));
 						if (executeMove(move2)) {
-							List<Pair<Integer, Integer>> move = new LinkedList<Pair<Integer, Integer>>();
-							move.add(move1);
-							move.add(move2);
-							if (longestSequence != 2) {
-								legalMoves.clear();
+							List<Pair<Integer, Integer>> finalMoveOrder = new LinkedList<Pair<Integer, Integer>>();
+							for (Pair<Integer, Integer> move : moveOrder) {
+								finalMoveOrder.add(move);
 							}
-							legalMoves.add(move);
 							
-							longestSequence = 2;
-							biggestDice = 7;
+							finalMoveOrder.add(move1);
+							finalMoveOrder.add(move2);
+							if (longestSequence != 4) {
+								finalLegalMoves.clear();
+							}
+							finalLegalMoves.add(finalMoveOrder);
+							longestSequence = 4;
 							
 							for (int idx = 0; idx <= 23; ++idx) {
 								board[idx] = new int[] {currBoard[idx][0], currBoard[idx][1]};
@@ -232,141 +271,40 @@ public class Board {
 							offboard = new Pair<Integer, Integer>(currOffboard.getFirst(), currOffboard.getLast());
 						}
 						else {
-							if (longestSequence == 2 || (dice.getLast() < biggestDice)) {
+							if (longestSequence > 3) {
 								continue;
 							}
-							List<Pair<Integer, Integer>> move = new LinkedList<Pair<Integer, Integer>>();
-							move.add(move1);
-							biggestDice = dice.getLast();
-							longestSequence = 1;
-							legalMoves.add(move);
+							List<Pair<Integer, Integer>> finalMoveOrder = new LinkedList<Pair<Integer, Integer>>();
+							for (Pair<Integer, Integer> move : moveOrder) {
+								finalMoveOrder.add(move);
+							}
+							finalMoveOrder.add(move1);
+							longestSequence = 3;
+							finalLegalMoves.add(finalMoveOrder);
 						}
         	    	}
 	    			for (int idx = 0; idx <= 23; ++idx) {
-						board[idx] = new int[] {startBoard[idx][0], startBoard[idx][1]};
+						board[idx] = new int[] {midBoard[idx][0], midBoard[idx][1]};
 					}
-					whiteChipsCaptured = startWhiteCaptured;
-					blackChipsCaptured = startBlackCaptured;
-					offboard = new Pair<Integer, Integer>(startOffboard.getFirst(), startOffboard.getLast());
+					whiteChipsCaptured = midWhiteCaptured;
+					blackChipsCaptured = midBlackCaptured;
+					offboard = new Pair<Integer, Integer>(midOffboard.getFirst(), midOffboard.getLast());
     			}
     		}
-    	}
-    	else {
-    		for (int i = 0; i <= 24; ++i) {
-    			if (i < 24 && board[i][1] != -1) {
-    				continue;
-    			}
-	    		Pair<Integer, Integer> move1 = new Pair<Integer, Integer>(i, Math.max(i - dice.getFirst(), -1));
-    			if (executeMove(move1)) {
-    				int[][] currBoard = new int[24][2];
-        	    	int currWhiteCaptured = whiteChipsCaptured;
-        	    	int currBlackCaptured = blackChipsCaptured;
-        	    	Pair<Integer, Integer> currOffboard = new Pair<Integer, Integer>(offboard.getFirst(), offboard.getLast());
-        	    	for (int k = 0; k <= 23; ++k) {
-        	    		currBoard[k] = new int[] {board[k][0], board[k][1]};
-        	    	}
-        	    	for (int j = 0; j <= 24; ++j) {
-        	    		if (j < 24 && board[j][1] != -1) {
-            				continue;
-            			}
-        	    		Pair<Integer, Integer> move2 = new Pair<Integer, Integer>(j, Math.max(j - dice.getLast(), -1));
-						if (executeMove(move2)) {
-							List<Pair<Integer, Integer>> move = new LinkedList<Pair<Integer, Integer>>();
-							move.add(move1);
-							move.add(move2);
-							if (longestSequence != 2) {
-								legalMoves.clear();
-							}
-							legalMoves.add(move);
-							
-							longestSequence = 2;
-							biggestDice = 7;
-							
-							for (int idx = 0; idx <= 23; ++idx) {
-								board[idx] = new int[] {currBoard[idx][0], currBoard[idx][1]};
-							}
-							whiteChipsCaptured = currWhiteCaptured;
-							blackChipsCaptured = currBlackCaptured;
-							offboard = new Pair<Integer, Integer>(currOffboard.getFirst(), currOffboard.getLast());
-						}
-						else {
-							if (longestSequence == 2 || (dice.getFirst() < biggestDice)) {
-								continue;
-							}
-							List<Pair<Integer, Integer>> move = new LinkedList<Pair<Integer, Integer>>();
-							move.add(move1);
-							biggestDice = dice.getFirst();
-							longestSequence = 1;
-							legalMoves.add(move);
-						}
-        	    	}
-	    			for (int idx = 0; idx <= 23; ++idx) {
-						board[idx] = new int[] {startBoard[idx][0], startBoard[idx][1]};
-					}
-					whiteChipsCaptured = startWhiteCaptured;
-					blackChipsCaptured = startBlackCaptured;
-					offboard = new Pair<Integer, Integer>(startOffboard.getFirst(), startOffboard.getLast());
-    			}
-    		}
-    		
-    		for (int i = 0; i <= 24; ++i) {
-    			if (i < 24 && board[i][1] != -1) {
-    				continue;
-    			}
-	    		Pair<Integer, Integer> move1 = new Pair<Integer, Integer>(i, Math.max(i - dice.getLast(), -1));
-    			if (executeMove(move1)) {
-    				int[][] currBoard = new int[24][2];
-        	    	int currWhiteCaptured = whiteChipsCaptured;
-        	    	int currBlackCaptured = blackChipsCaptured;
-        	    	Pair<Integer, Integer> currOffboard = new Pair<Integer, Integer>(offboard.getFirst(), offboard.getLast());
-        	    	for (int k = 0; k <= 23; ++k) {
-        	    		currBoard[k] = new int[] {board[k][0], board[k][1]};
-        	    	}
-        	    	for (int j = 0; j <= 24; ++j) {
-        	    		if (j < 24 && board[j][1] != -1) {
-            				continue;
-            			}
-        	    		Pair<Integer, Integer> move2 = new Pair<Integer, Integer>(j, Math.max(j - dice.getFirst(), -1));
-						if (executeMove(move2)) {
-							List<Pair<Integer, Integer>> move = new LinkedList<Pair<Integer, Integer>>();
-							move.add(move1);
-							move.add(move2);
-							if (longestSequence != 2) {
-								legalMoves.clear();
-							}
-							legalMoves.add(move);
-							
-							longestSequence = 2;
-							biggestDice = 7;
-							
-							for (int idx = 0; idx <= 23; ++idx) {
-								board[idx] = new int[] {currBoard[idx][0], currBoard[idx][1]};
-							}
-							whiteChipsCaptured = currWhiteCaptured;
-							blackChipsCaptured = currBlackCaptured;
-							offboard = new Pair<Integer, Integer>(currOffboard.getFirst(), currOffboard.getLast());
-						}
-						else {
-							if (longestSequence == 2 || (dice.getLast() < biggestDice)) {
-								continue;
-							}
-							List<Pair<Integer, Integer>> move = new LinkedList<Pair<Integer, Integer>>();
-							move.add(move1);
-							biggestDice = dice.getLast();
-							longestSequence = 1;
-							legalMoves.add(move);
-						}
-        	    	}
-	    			for (int idx = 0; idx <= 23; ++idx) {
-						board[idx] = new int[] {startBoard[idx][0], startBoard[idx][1]};
-					}
-					whiteChipsCaptured = startWhiteCaptured;
-					blackChipsCaptured = startBlackCaptured;
-					offboard = new Pair<Integer, Integer>(startOffboard.getFirst(), startOffboard.getLast());
-    			}
-    		}
-    	}
-       return legalMoves;
+        	
+        	for (int idx = 0; idx <= 23; ++idx) {
+				board[idx] = new int[] {startBoard[idx][0], startBoard[idx][1]};
+			}
+			whiteChipsCaptured = startWhiteCaptured;
+			blackChipsCaptured = startBlackCaptured;
+			offboard = new Pair<Integer, Integer>(startOffboard.getFirst(), startOffboard.getLast());
+		}
+		if (finalLegalMoves.size() == 0) {
+			return legalMoves;
+		}
+		else {
+			return finalLegalMoves;
+		}
     }
 
     private void removeChip(int pos) {
@@ -377,8 +315,6 @@ public class Board {
     }
 
     /**
-     * TODO - Implement moving the chips off the board in the final sector and
-     * placing captured chips on the board.
      * 
      * @param move Pair<Integer, Integer> {starting position, final position} if
      *             move.getLast() >= 24, we try to bear off
