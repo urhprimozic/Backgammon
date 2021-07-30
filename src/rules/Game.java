@@ -70,15 +70,15 @@ public class Game {
 	//	return valids;
 	//}
 	
-	public static double getGameEnded(Board b, int player) {
+	public static float getGameEnded(Board b, int player) {
 		if (b.offboard.getFirst() == 15) {
-			return player;
+			return (float) player;
 		}
 		else if (b.offboard.getLast() == 15) {
-			return -player;
+			return (float) -player;
 		}
 		else {
-			return 0;
+			return (float) 0;
 		}
 		
 	}
