@@ -16,7 +16,7 @@ public class AI extends WhoIsPlaying {
 		
 	}
 	
-	public Coordinates izberiPotezo(GameVisible gameVisible) throws TranslateException {
+	public Coordinates pickAMove(GameVisible gameVisible) {
 		if (mcts == null) {
 			mcts = new MonteCarloTreeSearch(new NNet(), gameVisible.player);
 		}
