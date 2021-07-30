@@ -605,10 +605,10 @@ public class GamePanel extends JPanel implements MouseListener, MouseMotionListe
 				// wood - try to drop one there
 				System.out.println("Bearing off..");
 				if (activeChipColor == 1) {
-					Leader.playMove(new Pair<Integer, Integer>(activeChipIndex, 24));
+					Leader.playHumanMove(new Pair<Integer, Integer>(activeChipIndex, 24));
 				}
 				else {
-					Leader.playMove(new Pair<Integer, Integer>(activeChipIndex, -1));
+					Leader.playHumanMove(new Pair<Integer, Integer>(activeChipIndex, -1));
 				}
 
 			} else if ((x < triangleCoordinates(5)[0] && x > triangleCoordinates(6)[0] + (TRIANGLE_WIDTH * getWidth()))
@@ -618,7 +618,7 @@ public class GamePanel extends JPanel implements MouseListener, MouseMotionListe
 					(y < triangleCoordinates(23)[1]) || // wooden top row
 					(y > triangleCoordinates(0)[1])) // wooden bottom row
 			{
-				Leader.playMove(null); // just to make the no legal move scenario more intuitive
+				Leader.playHumanMove(null); // just to make the no legal move scenario more intuitive
 				System.out.println("GUI: Not released on a triangle");
 			}
 			// Indicies 0 to 11
@@ -628,10 +628,10 @@ public class GamePanel extends JPanel implements MouseListener, MouseMotionListe
 					--i;
 				}
 				if (activeChipIndex == i) {
-					Leader.playMove(null); // just to make the no legal move scenario more intuitive
+					Leader.playHumanMove(null); // just to make the no legal move scenario more intuitive
 					return;
 				}
-				Leader.playMove(new Pair<Integer, Integer>(activeChipIndex, i));
+				Leader.playHumanMove(new Pair<Integer, Integer>(activeChipIndex, i));
 			}
 			// Indicies 12 to 23
 			else if (y < TRIANGLE_HEIGHT * getHeight() + woodSize()[1]) {
@@ -640,13 +640,13 @@ public class GamePanel extends JPanel implements MouseListener, MouseMotionListe
 					++i;
 				}
 				if (activeChipIndex == i) {
-					Leader.playMove(null); // just to make the no legal move scenario more intuitive
+					Leader.playHumanMove(null); // just to make the no legal move scenario more intuitive
 					return;
 				}
-				Leader.playMove(new Pair<Integer, Integer>(activeChipIndex, i));
+				Leader.playHumanMove(new Pair<Integer, Integer>(activeChipIndex, i));
 			}
 			else {
-				Leader.playMove(null); // just to make the no legal move scenario more intuitive
+				Leader.playHumanMove(null); // just to make the no legal move scenario more intuitive
 				System.out.println("GUI: Not released on a triangle");
 			}
 		}

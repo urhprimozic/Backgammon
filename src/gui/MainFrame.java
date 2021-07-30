@@ -15,6 +15,7 @@ import javax.swing.JMenuItem;
 
 import leader.Leader;
 import leader.PlayerType;
+import rules.Game;
 
 /**
  * TODO
@@ -122,34 +123,29 @@ public class MainFrame extends JFrame implements ActionListener {
 		}
 	}
 
-	public void osveziGUI() {
+	public void refreshGUI() {
 		if (Leader.board == null) {
 			status.setText("Igra ni v teku.");
 		}
-		// else {
-		// double stanje = Game.getGameEnded(Leader.igra.board, Leader.igra.igralec);
-		// if (stanje == 0) {
-		// String ime = "bel";
-		// if (Leader.igra.igralec == 1) ime = "črn";
-		// status.setText("Na potezi je " + ime +
-		// " - " + Leader.playerType.get(Leader.igra.igralec));
-		// }
-		// else if (stanje == -1 || stanje == 1) {
-		// if (Leader.igra.igralec == 1) {
-		// status.setText("Zmagal je bel." +
-		// Leader.playerType.get(-1));
-		// }
-		// else {
-		// status.setText("Zmagal je črn." +
-		// Leader.playerType.get(1));
-		// }
-		// }
-		// else {
-		// System.out.println(stanje);
-		// status.setText("Neodločeno!");
-		// }
-		//
-		// }
+		else {
+			double stanje = Game.getGameEnded(Leader.board, Leader.player);
+			if (stanje == 0) {
+				String ime = "črn";
+				if (Leader.player == 1) ime = "bel";
+				status.setText("Na potezi je " + ime +
+						" - " + Leader.playerType.get(Leader.player));
+			}
+			else {
+				if (Leader.player == 1) {
+					status.setText("Zmagal je črn. " +
+							Leader.playerType.get(-1));
+				}
+				else {
+					status.setText("Zmagal je bel. " +
+							Leader.playerType.get(1));
+				}
+			}
+		}
 		gamePanel.repaint();
 	}
 

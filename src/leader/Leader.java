@@ -4,8 +4,12 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import javax.swing.SwingWorker;
+
+import ai.AI;
 import gui.MainFrame;
 import rules.Board;
+import rules.Game;
 import utils.Pair;
 
 public class Leader {
@@ -25,8 +29,8 @@ public class Leader {
     private static List<Pair<Integer, Integer>> movesPlayed = null; 
     public static int maxMoves = 0;
 
-    //public static Inteligenca comp1;
-    //public static Inteligenca comp2;
+    public static AI comp1;
+    public static AI comp2;
 
     public static void newGame() {
         board = new Board();
@@ -36,23 +40,41 @@ public class Leader {
         legalMoves = null;
         movesPlayed = null;
         maxMoves = 0;
-    //
-    // if (vrstaIgralca.get(1) == VrstaIgralca.R) {
-    // comp1 = new Inteligenca();
-    // }
-    // else {
-    // comp1 = null;
-    // }
-    //
-    // if (vrstaIgralca.get(-1) == VrstaIgralca.R) {
-    // comp2 = new Inteligenca();
-    // }
-    // else {
-    // comp2 = null;
-    // }
-    //
-    // igramo();
-  }
+    
+        if (playerType.get(1) == PlayerType.C) {
+        	comp1 = new AI();
+        }
+        else {
+        	comp1 = null;
+        }
+        if (playerType.get(-1) == PlayerType.C) {
+        	comp2 = new AI();
+        }
+        else {
+        	comp2 = null;
+        }
+        play();
+    }
+    
+    public static void play() {
+    	frame.refreshGUI();
+    	double state = Game.getGameEnded(board, player);
+    	
+    	if (state != 0) {
+    		return;
+    	}
+    	
+    	PlayerType type = playerType.get(player);
+    	switch (type) {
+    	case H:
+    		humanRound = true;
+    		break;
+    	case C:
+    		humanRound = false;
+    		computerTurn();
+    		break;
+    	}
+    }
   
     public static void rollDice() {
 	    board.rollDice();
@@ -67,7 +89,7 @@ public class Leader {
 	    movesPlayed = null;
     }
     
-    public static void playMove(Pair<Integer, Integer> move) {
+    public static void playHumanMove(Pair<Integer, Integer> move) {
     	if (move != null) {
 	    	outer_loop:
 	    	for (int i = 0; i < legalMoves.size(); ++i) {
@@ -107,5 +129,39 @@ public class Leader {
     		movesMade = 0;
     		diceRolled = false;
     	}
+    	play();
+    }
+    
+    public static void computerTurn() {
+    	Board startBoard = board;
+    	SwingWorker<List<Pair<Integer, Integer>>, Void> worker = new SwingWorker<List<Pair<Integer, Integer>>, Void> () {
+    		@Override
+    		protected List<Pair<Integer, Integer>> doInBackground() {
+    			rollDice();
+    			frame.refreshGUI();
+    			if (player == 1) {
+    				return comp1.chooseMoveOrder();
+    			}
+    			else {
+    				return comp2.chooseMoveOrder();
+    			}
+    		}
+    		
+    		@Override
+    		protected void done() {
+    			List<Pair<Integer, Integer>> moveOrder = null;
+    			try {moveOrder = get();} catch (Exception e) {e.printStackTrace();};
+    			if (board == startBoard) {
+    				for (Pair<Integer, Integer> move : moveOrder) {
+    					board.executeMove(move);
+    				}
+    				player *= -1;
+            		movesMade = 0;
+            		diceRolled = false;
+    				play();
+    			}
+    		}
+    	};
+    	worker.execute();
     }
 }
