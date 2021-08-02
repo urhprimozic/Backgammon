@@ -4,6 +4,7 @@
 package ai;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import rules.Board;
@@ -13,23 +14,23 @@ import utils.Utils;
 
 public class MonteCarloTreeSearch {
 		
-	private final int timeMilli = 4500;
+	private final int timeMilli = 1000;
 	private final double cpuct = 1.0;
 	private final double EPS = 1e-8;
 		
-	private Map<Pair<String, Integer>, Pair<Float, Integer>> stateActionMap;
+	private Map<Pair<String, List<Pair<Integer, Integer>>>, Pair<Float, Integer>> stateActionMap;
 	private Map<String, MCTSMapEntry> stateMap;
 	
 	private int depth;
 	private int gamePlayer;
 	private Hevristic hevristic;
 	
-	public MonteCarloTreeSearch(Hevristic hevristic , int p) {
+	public MonteCarloTreeSearch(Hevristic hevristic, int p) {
 		this.hevristic = hevristic;
 	//	this.nnet = nnet;
 		this.gamePlayer = p;
 		
-		stateActionMap = new HashMap<Pair<String, Integer>, Pair<Float, Integer>>();
+		stateActionMap = new HashMap<Pair<String, List<Pair<Integer, Integer>>>, Pair<Float, Integer>>();
 		stateMap = new HashMap<String, MCTSMapEntry>();
 		depth = 0;
 	}
@@ -44,16 +45,15 @@ public class MonteCarloTreeSearch {
 	}
 	
 	public float[] getActionProb(Board board, Pair<Integer, Integer> dice) {
-		return getActionProb(board,dice,  1);
+		return getActionProb(board, dice, 1);
 	}
 	
-	public float[] getActionProb(Board board, Pair<Integer, Integer> dice,double temp) {
+	public float[] getActionProb(Board board, Pair<Integer, Integer> dice, double temp) {
 		
 		Board canonicalBoard = new Board();
-		for (int i = 0; i<24;i++){
+		for (int i = 0; i<24; i++){
 			canonicalBoard.board[i][0] = board.board[i][0];
 			canonicalBoard.board[i][1] = board.board[i][1] * -gamePlayer;
-
 		}
 		
 		depth += 1;
@@ -68,10 +68,12 @@ public class MonteCarloTreeSearch {
 		System.out.println("Stevilo simulacij: " + n);
 		
 		String s = Game.stringRepresentation(canonicalBoard);
-		int[] counts = new int[Game.getActionSize(board)];
+		List<List<Pair<Integer, Integer>>> legalMoves = board.getLegalMoves(gamePlayer, dice);
+		int[] counts = new int[legalMoves.size()];
 		
-		for (int i = 0; i < Game.getActionSize(board); ++i) {
-			Pair<String, Integer> sa = new Pair<String, Integer>(s, i);
+		for (int i = 0; i < legalMoves.size(); ++i) {
+			List<Pair<Integer, Integer>> moveOrder = legalMoves.get(i);
+			Pair<String, List<Pair<Integer, Integer>>> sa = new Pair<String, List<Pair<Integer, Integer>>>(s, moveOrder);
 			Pair<Float, Integer> entry = stateActionMap.get(sa);
 			counts[i] = entry == null ? 0 : entry.getLast();
 		}
@@ -105,7 +107,7 @@ public class MonteCarloTreeSearch {
 			return -entry.E;
 		}
 		if (entry.P == null) {
-			Pair<float[], Float> result =hevristic.get(board, dice); // nnet.predict(board);
+			Pair<float[], Float> result = hevristic.get(board, dice); // nnet.predict(board);
 			entry.P = result.getFirst();
 			float v = result.getLast();
 			
@@ -139,8 +141,8 @@ public class MonteCarloTreeSearch {
 		double curBest = -Double.MAX_VALUE;
 		int bestAction = -1;
 		
-		
-		for (int a = 0; a < Game.getActionSize(board); ++a) {
+		List<List<Pair<Integer, Integer>>> legalMoves = board.getLegalMoves(gamePlayer, dice);
+		for (int a = 0; a < legalMoves.size(); ++a) {
 			if (valids[a] == 1) {
 				double u = 0;
 				Pair<String, Integer> p = new Pair<String, Integer>(s, a);
