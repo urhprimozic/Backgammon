@@ -38,16 +38,6 @@ public class Game {
 	//	return new utils.Pair<Integer, Integer>(b.n, b.n);
 	//}
 	
-	/**
-	 * TODO
-	 * @param b
-	 * @return
-	 */
-	public static int getActionSize(Board b) {
-		//TODO
-		return -1;
-	}
-	
 	//public static utils.Pair<Board, Integer> getNextState(Board b, int p, int a) {
 		//Board next = new Board(b.n);
 		//next.board = new int[b.n][b.n];

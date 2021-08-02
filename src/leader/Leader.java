@@ -42,13 +42,13 @@ public class Leader {
         maxMoves = 0;
     
         if (playerType.get(1) == PlayerType.C) {
-        	comp1 = new AI();
+        	comp1 = new AI(1);
         }
         else {
         	comp1 = null;
         }
         if (playerType.get(-1) == PlayerType.C) {
-        	comp2 = new AI();
+        	comp2 = new AI(-1);
         }
         else {
         	comp2 = null;

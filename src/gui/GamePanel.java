@@ -389,19 +389,19 @@ public class GamePanel extends JPanel implements MouseListener, MouseMotionListe
 					// top row
 					if (i >= 12) {
 						if (num - 4 < 10) {
-							g2.drawString(String.valueOf(num - 4), triangleCoordinates(i)[0] + (chipSize() * 7 / 24) + ((int) (getWidth() * TRIANGLE_WIDTH) - chipSize()), triangleCoordinates(i)[1] + chipSize() * 3 / 4);
+							g2.drawString(String.valueOf(num - 4), triangleCoordinates(i)[0] + (chipSize() / 3) + ((int) (getWidth() * TRIANGLE_WIDTH) - chipSize()) / 2, triangleCoordinates(i)[1] + chipSize() * 3 / 4);
 						}
 						else {
-							g2.drawString(String.valueOf(num - 4), triangleCoordinates(i)[0] + (chipSize() / 12) + ((int) (getWidth() * TRIANGLE_WIDTH) - chipSize()), triangleCoordinates(i)[1] + chipSize() * 3 / 4);
+							g2.drawString(String.valueOf(num - 4), triangleCoordinates(i)[0] + (chipSize() / 12) + ((int) (getWidth() * TRIANGLE_WIDTH) - chipSize()) / 2, triangleCoordinates(i)[1] + chipSize() * 3 / 4);
 						}
 					}
 					// bottom row
 					else {
 						if (num - 4 < 10) {
-							g2.drawString(String.valueOf(num - 4), triangleCoordinates(i)[0] + (chipSize() * 7 / 24) + ((int) (getWidth() * TRIANGLE_WIDTH) - chipSize()), triangleCoordinates(i)[1] - chipSize() / 4);
+							g2.drawString(String.valueOf(num - 4), triangleCoordinates(i)[0] + (chipSize() / 3) + ((int) (getWidth() * TRIANGLE_WIDTH) - chipSize()) / 2, triangleCoordinates(i)[1] - chipSize() / 4);
 						}
 						else {
-							g2.drawString(String.valueOf(num - 4), triangleCoordinates(i)[0] + (chipSize() / 12) + ((int) (getWidth() * TRIANGLE_WIDTH) - chipSize()), triangleCoordinates(i)[1] - chipSize() / 4);
+							g2.drawString(String.valueOf(num - 4), triangleCoordinates(i)[0] + (chipSize() / 12) + ((int) (getWidth() * TRIANGLE_WIDTH) - chipSize()) / 2, triangleCoordinates(i)[1] - chipSize() / 4);
 						}
 					}
 				}
