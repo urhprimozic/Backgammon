@@ -4,7 +4,7 @@ import utils.Pair;
 
 public class Game {
 	
-
+	public int player;
 	public static String stringRepresentation(Board b) {
 		String ans = "";
 		// upper numbers
