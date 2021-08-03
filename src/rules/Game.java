@@ -1,38 +1,23 @@
 package rules;
 
+import java.util.List;
+
 import utils.Pair;
 
 public class Game {
 	
-	public int player;
-	public static String stringRepresentation(Board b) {
+	public static String stringRepresentation(Board b, Pair<Integer, Integer> dice) {
 		String ans = "";
-		// upper numbers
-		for (int i = 13; i<= 24;i++){
-			ans += " " + String.valueOf(i) + " ";
+		ans += String.valueOf(dice.getFirst()) + ",";
+		ans += String.valueOf(dice.getLast()) + ",";
+		ans += String.valueOf(b.whiteChipsCaptured) + ",";
+		for (int i = 0; i <= 23; ++i) {
+			ans += String.valueOf(b.board[i][0] * b.board[i][1]) + ",";
 		}
-		ans+="------------------------";
-
-		for (int l = 1; l <= 5; l++){
-			for(int s = 0; s< 12;s++){
-				if (b.board[s][0] >= l){
-					ans += " TODOOO"+" ";
-				}
-			}
-		}
-
-		//lower lines
-		ans+="------------------------";
-		for (int i = 1; i<= 12;i++){
-			ans += " " + String.valueOf(i) + " ";
-		}
+		ans += String.valueOf(b.blackChipsCaptured);
 		return ans;
 	}
 	
-	public static int[][] getInitBoard() {
-		Board b = new Board();
-		return b.board;
-	}
 	
 	//public static utils.Pair<Integer, Integer> getBoardSize(Board b) {
 	//	return new utils.Pair<Integer, Integer>(b.n, b.n);
@@ -73,16 +58,45 @@ public class Game {
 		
 	}
 
-    public static int[] getValidMoves(Board board, int i) {
-        return null;
-    }
-
-	public static Pair<Board, Integer> getNextState(Board board, int i, int a) {
-		return null;
+	public static Board getNextState(Board board, List<Pair<Integer, Integer>> moveOrder) {
+		Board nextBoard = new Board();
+		for (int i = 0; i<24; i++){
+			nextBoard.board[i][0] = board.board[i][0];
+			nextBoard.board[i][1] = board.board[i][1];
+		}
+		nextBoard.whiteChipsCaptured = board.whiteChipsCaptured;
+		nextBoard.blackChipsCaptured = board.blackChipsCaptured;
+		nextBoard.offboard = new Pair<Integer, Integer> (board.offboard.getFirst(), board.offboard.getLast());
+		
+		for (Pair<Integer, Integer> move : moveOrder) {
+			nextBoard.executeMove(move);
+		}
+		nextBoard.rollDice();
+		return nextBoard;
 	}
 
-    public static Board getCannonicalForm(Board nextBoard, int nextPlayer) {
-        return null;
+    public static Board getCannonicalForm(Board board, int player) {
+    	Board canonicalBoard = new Board();
+		if (player == 1) {
+			for (int i = 0; i<24; i++){
+				canonicalBoard.board[i][0] = board.board[i][0];
+				canonicalBoard.board[i][1] = board.board[i][1];
+			}
+			canonicalBoard.whiteChipsCaptured = board.whiteChipsCaptured;
+			canonicalBoard.blackChipsCaptured = board.blackChipsCaptured;
+			canonicalBoard.offboard = new Pair<Integer, Integer> (board.offboard.getFirst(), board.offboard.getLast());
+		}
+		else {
+			for (int i = 0; i<24; i++){
+				canonicalBoard.board[i][0] = board.board[23 - i][0];
+				canonicalBoard.board[i][1] = -board.board[23 - i][1];
+			}
+			canonicalBoard.whiteChipsCaptured = board.blackChipsCaptured;
+			canonicalBoard.blackChipsCaptured = board.whiteChipsCaptured;
+			canonicalBoard.offboard = new Pair<Integer, Integer> (board.offboard.getLast(), board.offboard.getFirst());
+		}
+		canonicalBoard.dice = new Pair<Integer, Integer>(board.dice.getFirst(), board.dice.getLast());
+		return canonicalBoard;
     }
 	
 	//public static Board getCannonicalForm(Board b, int player) {

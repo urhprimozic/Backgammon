@@ -1,6 +1,8 @@
 package ai;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import rules.Board;
 import utils.Pair;
@@ -25,9 +27,9 @@ public class Hevristic {
     private double[] constants;
     private double badConstant;
 
-    public Hevristic(double[] constants, double badConstant) {
-        this.constants = constants;
-        this.badConstant = badConstant;
+    public Hevristic(Pair<double[], Double> parameters) {
+        this.constants = parameters.getFirst();
+        this.badConstant = parameters.getLast();
     }
 
     /**
@@ -36,16 +38,16 @@ public class Hevristic {
      * @param board , dice- current dice throws
      * @return
      */
-    public Pair<float[], Float> get(Board board, Pair<Integer, Integer> dice) {
+    public Pair<Map<List<Pair<Integer, Integer>>, Float>, Float> get(Board board, Pair<Integer, Integer> dice) {
         int player = 1;
         List<List<Pair<Integer, Integer>>> legalMoves = board.getLegalMoves(player, dice);
 
         // propability - TODO mjbi daš trapastim potezam, aka da je slabo postavt enga
         // samega na trikontik
-        float[] p = new float[legalMoves.size()];
+        Map<List<Pair<Integer, Integer>>, Float> p = new HashMap<List<Pair<Integer, Integer>>, Float>();
         System.out.println("Calculating random propabitliy..");
-        for (int i = 0; i < legalMoves.size(); i++) {
-            p[i] = (float) Math.random();
+        for (List<Pair<Integer, Integer>> moveOrder : legalMoves) {
+            p.put(moveOrder, (float) Math.random());
         }
 
         // v - quality of the board
@@ -68,7 +70,7 @@ public class Hevristic {
 
         }
 
-        return new Pair<float[], Float>(p, v);
+        return new Pair<Map<List<Pair<Integer, Integer>>, Float>, Float>(p, v);
     }
 
     /**
@@ -90,6 +92,6 @@ public class Hevristic {
 
         //bad constant
         double badConstant =  Math.pow(23, P);
-        return new Pair(constants, badConstant);
+        return new Pair<double[], Double>(constants, badConstant);
     }
 }

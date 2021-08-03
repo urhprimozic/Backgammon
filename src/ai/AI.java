@@ -2,6 +2,9 @@ package ai;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+
 import leader.Leader;
 import rules.Game;
 import utils.WhoIsPlaying;
@@ -13,33 +16,29 @@ public class AI extends WhoIsPlaying {
 	
 	public AI(int p) {
 		super("JonMikos + UrhPrimozic");
-		double[] consts = new double[24];
-		for (int i = 0; i < consts.length; ++i) {
-			consts[i] = 1;
-		}
-		mcts = new MonteCarloTreeSearch(new Hevristic(consts, 100), p);
+		mcts = new MonteCarloTreeSearch(new Hevristic(Hevristic.getConstants()), p);
 		
 	}
 
+	@SuppressWarnings("unchecked")
 	public List<Pair<Integer, Integer>> chooseMoveOrder() {
-		float[] probs = mcts.getActionProb(Leader.board, Leader.board.dice);
-		List<List<Pair<Integer, Integer>>> legalMoves = Leader.board.getLegalMoves(Leader.player, Leader.board.dice);
+		Map<List<Pair<Integer, Integer>>, Float> probs = mcts.getActionProb(Leader.board, Leader.board.dice);
+		if (probs.size() == 0) {
+			return new LinkedList<Pair<Integer, Integer>>();
+		}
 		
 		double sum = 0;
 		double cuttoff = Math.random();
-		for (int i = 0; i < probs.length; ++i) {
-			if (sum + probs[i] >= cuttoff) {
-				return legalMoves.get(i);
+		System.out.println(cuttoff);
+		for (Entry<List<Pair<Integer, Integer>>, Float> e : probs.entrySet()) {
+			System.out.print(sum);
+			System.out.println(" " + e.getValue());
+			if (sum + e.getValue() >= cuttoff) {
+				return e.getKey();
 			}
-			sum += probs[i];	
+			sum += e.getValue();	
 		}
-		
-		// Fallback plan, should never ever happen but floats are scary		
-		if (legalMoves.size() == 0) {
-			return new LinkedList<Pair<Integer, Integer>>();
-		}
-		else {
-			return legalMoves.get((int)(Math.random() * legalMoves.size()));
-		}
+		System.out.println("probs failed");
+		return (List<Pair<Integer, Integer>>) probs.keySet().toArray()[(int) (Math.random() * probs.size())];
 	}
 }

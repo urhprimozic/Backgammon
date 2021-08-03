@@ -152,7 +152,10 @@ public class Leader {
     			List<Pair<Integer, Integer>> moveOrder = null;
     			try {moveOrder = get();} catch (Exception e) {e.printStackTrace();};
     			if (board == startBoard) {
+    				System.out.println(board.dice.getFirst() + " " + board.dice.getLast());
     				for (Pair<Integer, Integer> move : moveOrder) {
+    					System.out.print(move.getFirst() + " -> " + move.getLast() + ", ");
+    					System.out.println();
     					board.executeMove(move);
     				}
     				player *= -1;

@@ -4,8 +4,10 @@
 package ai;
 
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import rules.Board;
 import rules.Game;
@@ -43,55 +45,57 @@ public class MonteCarloTreeSearch {
 		stateActionMap.keySet().removeIf(e -> calcDepth(e.getFirst()) < depth);
 		stateMap.keySet().removeIf(e -> calcDepth(e) < depth);
 	}
-	
-	public float[] getActionProb(Board board, Pair<Integer, Integer> dice) {
-		return getActionProb(board, dice, 1);
-	}
-	
-	public float[] getActionProb(Board board, Pair<Integer, Integer> dice, double temp) {
+
+	public Map<List<Pair<Integer, Integer>>, Float> getActionProb(Board board, Pair<Integer, Integer> dice) {
 		
-		Board canonicalBoard = new Board();
-		for (int i = 0; i<24; i++){
-			canonicalBoard.board[i][0] = board.board[i][0];
-			canonicalBoard.board[i][1] = board.board[i][1] * -gamePlayer;
-		}
+		Board canonicalBoard = Game.getCannonicalForm(board, gamePlayer);	
 		
 		depth += 1;
 		long start = System.currentTimeMillis();
 		int n = 0;
-		while (start + timeMilli > System.currentTimeMillis()) {
-//		while (n < 10000) {
+//		while (start + timeMilli > System.currentTimeMillis()) {
+		while (n < 1000) {
 			search(canonicalBoard, dice);
 			n++;
 		}
 		
 		System.out.println("Stevilo simulacij: " + n);
 		
-		String s = Game.stringRepresentation(canonicalBoard);
-		List<List<Pair<Integer, Integer>>> legalMoves = board.getLegalMoves(gamePlayer, dice);
-		int[] counts = new int[legalMoves.size()];
+		String s = Game.stringRepresentation(canonicalBoard, dice);
+		List<List<Pair<Integer, Integer>>> legalMoves = canonicalBoard.getLegalMoves(gamePlayer, dice);
+		Map<List<Pair<Integer, Integer>>, Integer> counts = new HashMap<List<Pair<Integer, Integer>>, Integer>();
 		
-		for (int i = 0; i < legalMoves.size(); ++i) {
-			List<Pair<Integer, Integer>> moveOrder = legalMoves.get(i);
+		for (List<Pair<Integer, Integer>> moveOrder : legalMoves) {
 			Pair<String, List<Pair<Integer, Integer>>> sa = new Pair<String, List<Pair<Integer, Integer>>>(s, moveOrder);
 			Pair<Float, Integer> entry = stateActionMap.get(sa);
-			counts[i] = entry == null ? 0 : entry.getLast();
+			counts.put(moveOrder, entry == null ? 0 : entry.getLast());
 		}
 		
 		pruneTree();
 		
-		float[] probs = new float[counts.length];
-		int sum = Utils.sumIntArray(counts);
+		Map<List<Pair<Integer, Integer>>, Float> probs = new HashMap<List<Pair<Integer, Integer>>, Float>();
+		float sum = 0;
+		for (Entry<List<Pair<Integer, Integer>>, Integer> e : counts.entrySet()) {
+			sum += e.getValue();
+		}
 		
-		for (int i = 0; i < counts.length; ++i) {
-			float x = (float) Math.pow(counts[i], 1. / temp);
-			probs[i] = x / sum;
+		for (Entry<List<Pair<Integer, Integer>>, Integer> e : counts.entrySet()) {
+			if (gamePlayer == 1) {
+				probs.put(e.getKey(), e.getValue() / sum);
+			}
+			else {
+				List<Pair<Integer, Integer>> moveOrder = new LinkedList<Pair<Integer, Integer>>();
+				for (Pair<Integer, Integer> move : e.getKey()) {
+					moveOrder.add(new Pair<Integer, Integer>(23 - move.getFirst(), 23 - move.getLast()));
+				}
+				probs.put(moveOrder, e.getValue() / sum);
+			}
 		}
 		return probs;
 	}
 	
 	public float search(Board board, Pair<Integer, Integer> dice) {
-		String s = Game.stringRepresentation(board);
+		String s = Game.stringRepresentation(board, dice);
 		
 		MCTSMapEntry entry = stateMap.get(s);
 		
@@ -107,72 +111,64 @@ public class MonteCarloTreeSearch {
 			return -entry.E;
 		}
 		if (entry.P == null) {
-			Pair<float[], Float> result = hevristic.get(board, dice); // nnet.predict(board);
+			Pair<Map<List<Pair<Integer, Integer>>, Float>, Float> result = hevristic.get(board, dice); // nnet.predict(board);
 			entry.P = result.getFirst();
 			float v = result.getLast();
 			
-			int[] valids = Game.getValidMoves(board, 1);
-			float[] arr = entry.P;
-			for (int i = 0; i < arr.length; ++i) {
-				arr[i] = valids[i] == 1 ? arr[i] : 0;
+			//int[] valids = Game.getValidMoves(board, dice, gamePLayer);
+			List<List<Pair<Integer, Integer>>> legalMoves = board.getLegalMoves(1, dice);
+			
+			Map<List<Pair<Integer, Integer>>, Float> arr = entry.P;
+			float sum = 0;
+			for (float val : arr.values()) {
+				sum += val;
 			}
-			float sum = Utils.sumFloatArray(arr);
 			if (sum > 0) {
-				for (int i = 0; i < arr.length; ++i) {
-					arr[i] = arr[i] / sum;
+				for (Entry<List<Pair<Integer, Integer>>, Float> e : arr.entrySet()) {
+					e.setValue(e.getValue() / sum);
 				}
 				entry.P = arr;
 			}
 			else {
-				int vSum = Utils.sumIntArray(valids);
-				float[] newArr = new float[valids.length];
-				for (int i = 0; i < valids.length; ++i) {
-					newArr[i] = valids[i] / vSum;
-				}
-				entry.P = newArr;
+				entry.P = new HashMap<List<Pair<Integer, Integer>>, Float>();
 			}
 			
-			entry.V = valids;
+			entry.V = legalMoves;
 			entry.N = 0;
 			return -v;
 		}
 
-		int[] valids = entry.V;
+		List<List<Pair<Integer, Integer>>> valids = entry.V;
 		double curBest = -Double.MAX_VALUE;
-		int bestAction = -1;
+		List<Pair<Integer, Integer>> bestAction = new LinkedList<Pair<Integer, Integer>>();
 		
-		List<List<Pair<Integer, Integer>>> legalMoves = board.getLegalMoves(gamePlayer, dice);
-		for (int a = 0; a < legalMoves.size(); ++a) {
-			if (valids[a] == 1) {
-				double u = 0;
-				Pair<String, Integer> p = new Pair<String, Integer>(s, a);
-				Pair<Float, Integer> saVal = stateActionMap.get(p);
-				
-				if (saVal != null) {
-					double QVal = saVal.getFirst();
-					int NVal = saVal.getLast();
-					u = QVal + cpuct * entry.P[a] * Math.sqrt(entry.N) / (1 + NVal);
-				}
-				else {
-					u = cpuct * entry.P[a] * Math.sqrt(entry.N + EPS);
-				}
-				if (u > curBest) {
-					curBest = u;
-					bestAction = a;
-				}
+		for (List<Pair<Integer, Integer>> moveOrder : valids) {
+			double u = 0;
+			Pair<String, List<Pair<Integer, Integer>>> p = new Pair<String, List<Pair<Integer, Integer>>>(s, moveOrder);
+			Pair<Float, Integer> saVal = stateActionMap.get(p);
+			
+			if (saVal != null) {
+				double QVal = saVal.getFirst();
+				int NVal = saVal.getLast();
+				u = QVal + cpuct * entry.P.get(moveOrder) * Math.sqrt(entry.N) / (1 + NVal);
+			}
+			else {
+				u = cpuct * entry.P.get(moveOrder) * Math.sqrt(entry.N + EPS);
+			}
+			if (u > curBest) {
+				curBest = u;
+				bestAction = moveOrder;
 			}
 		}
 		
-		int a = bestAction;
+		List<Pair<Integer, Integer>> a = bestAction;
 		
-		Pair<Board, Integer> result = Game.getNextState(board, 1, a);
-		Board nextBoard = result.getFirst();
-		int nextPlayer = result.getLast();
-		nextBoard = Game.getCannonicalForm(nextBoard, nextPlayer);
+		Board nextBoard = Game.getNextState(board, a);
+		nextBoard = Game.getCannonicalForm(nextBoard, -1);
 		
-		float v = search(nextBoard, dice);
+		float v = search(nextBoard, nextBoard.dice);
 		
-		Pair<String, Integer> bestCombo = new Pair<String, Integer>(s, a);
+		Pair<String, List<Pair<Integer, Integer>>> bestCombo = new Pair<String, List<Pair<Integer, Integer>>>(s, a);
 		Pair<Float, Integer> saVal = stateActionMap.get(bestCombo);
 		
 		if (saVal != null) {
