@@ -31,6 +31,7 @@ public class Leader {
 
     public static AI comp1;
     public static AI comp2;
+	//public static int mctsTimeLimit;
 
     public static void newGame() {
         board = new Board();
@@ -40,15 +41,19 @@ public class Leader {
         legalMoves = null;
         movesPlayed = null;
         maxMoves = 0;
-    
+		
         if (playerType.get(1) == PlayerType.C) {
         	comp1 = new AI(1);
+			//sets time limit
+			comp1.setTimeLimit(frame.mctsTimeLimit);
         }
         else {
         	comp1 = null;
         }
         if (playerType.get(-1) == PlayerType.C) {
         	comp2 = new AI(-1);
+			//sets time limit
+			comp2.setTimeLimit(frame.mctsTimeLimit);
         }
         else {
         	comp2 = null;

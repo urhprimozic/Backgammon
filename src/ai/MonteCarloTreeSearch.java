@@ -17,7 +17,7 @@ import utils.Utils;
 
 public class MonteCarloTreeSearch {
 		
-	private final int timeMilli = 1000;
+	private int timeMilli = 1000;
 	private final double cpuct = 1.0;
 	private final double EPS = 1e-8;
 		
@@ -37,7 +37,14 @@ public class MonteCarloTreeSearch {
 		stateMap = new HashMap<String, MCTSMapEntry>();
 		depth = 0;
 	}
-	
+	/**
+	 * Sets a new time limit for mcts
+	 * @param s time in miliseconds
+	 */
+	protected void setTimeLimit(int s){
+		timeMilli = s;
+	}
+
 	private long calcDepth(String s) {
 		return s.chars().filter(c -> c == '1').count() / 2 + 1;
 	}
@@ -55,7 +62,7 @@ public class MonteCarloTreeSearch {
 		long start = System.currentTimeMillis();
 		int n = 0;
 //		while (start + timeMilli > System.currentTimeMillis()) {
-		while (n < 1000) {
+		while (n < timeMilli) {
 			search(canonicalBoard, dice);
 			n++;
 		}

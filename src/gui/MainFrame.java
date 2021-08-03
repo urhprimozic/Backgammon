@@ -7,11 +7,13 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.HashMap;
 
+import javax.swing.ButtonGroup;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JRadioButtonMenuItem;
 
 import leader.Leader;
 import leader.PlayerType;
@@ -36,6 +38,15 @@ public class MainFrame extends JFrame implements ActionListener {
 	private JMenuItem button_CH;
 	private JMenuItem button_HH;
 	private JMenuItem button_CC;
+	private JRadioButtonMenuItem rbEasy;
+	private JRadioButtonMenuItem rbMedium;
+	private JRadioButtonMenuItem rbHard;
+
+	// Time limits for dificulty settings
+	private final static int TIME_EASY = 1000;
+	private final static int TIME_MEDIUM = 3000;
+	private final static int TIME_HARD = 5500;
+	public int mctsTimeLimit;
 
 	/**
 	 * Creates window
@@ -66,9 +77,28 @@ public class MainFrame extends JFrame implements ActionListener {
 		new_game_menu.add(button_CC);
 		button_CC.addActionListener(this);
 
-		// settings
-		JMenu settings_menu = new JMenu("Nastavitve");
-		menu_bar.add(settings_menu);
+		// ai difficulty
+		JMenu dificulty_menu = new JMenu("Težavnost");
+		menu_bar.add(dificulty_menu);
+
+		rbEasy = new JRadioButtonMenuItem("Easy");
+		rbEasy.setSelected(true);
+		dificulty_menu.add(rbEasy);
+		rbEasy.addActionListener(this);
+
+		rbMedium = new JRadioButtonMenuItem("Medium");
+		rbMedium.setSelected(false);
+		dificulty_menu.add(rbMedium);
+		rbMedium.addActionListener(this);
+
+		rbHard = new JRadioButtonMenuItem("Hard");
+		rbHard.setSelected(false);
+		dificulty_menu.add(rbHard);
+		rbHard.addActionListener(this);
+
+		//// settings
+		//JMenu settings_menu = new JMenu("Nastavitve");
+		//menu_bar.add(settings_menu);
 
 		// board and chips
 		gamePanel = new GamePanel();
@@ -91,6 +121,8 @@ public class MainFrame extends JFrame implements ActionListener {
 		getContentPane().add(status, status_layout);
 
 		status.setText("Izberite igro!");
+
+		mctsTimeLimit = TIME_EASY;
 
 	}
 
@@ -120,29 +152,55 @@ public class MainFrame extends JFrame implements ActionListener {
 			Leader.playerType.put(-1, PlayerType.C);
 			Leader.newGame();
 			gamePanel.repaint();
+		} else if (e.getSource() == rbEasy) {
+			rbEasy.setSelected(true);
+			rbMedium.setSelected(false);
+			rbHard.setSelected(false);
+			System.out.println("easy mode selected");
+			if (Leader.comp1 != null)
+				Leader.comp1.setTimeLimit(TIME_EASY);
+			if (Leader.comp2 != null)
+				Leader.comp2.setTimeLimit(TIME_EASY);
+			mctsTimeLimit = TIME_EASY;
+		} else if (e.getSource() == rbMedium) {
+			rbEasy.setSelected(false);
+			rbMedium.setSelected(true);
+			rbHard.setSelected(false);
+			System.out.println("medium mode selected");
+			mctsTimeLimit = TIME_MEDIUM;
+			if (Leader.comp1 != null)
+				Leader.comp1.setTimeLimit(TIME_MEDIUM);
+			if (Leader.comp2 != null)
+				Leader.comp2.setTimeLimit(TIME_MEDIUM);
+		} else if (e.getSource() == rbHard) {
+			rbEasy.setSelected(false);
+			rbMedium.setSelected(false);
+			rbHard.setSelected(true);
+			System.out.println("hard mode selected");
+			mctsTimeLimit = TIME_HARD;
+			if (Leader.comp1 != null)
+				Leader.comp1.setTimeLimit(TIME_HARD);
+			if (Leader.comp2 != null)
+				Leader.comp2.setTimeLimit(TIME_HARD);
 		}
+
 	}
 
 	public void refreshGUI() {
 		if (Leader.board == null) {
 			status.setText("Igra ni v teku.");
-		}
-		else {
+		} else {
 			double stanje = Game.getGameEnded(Leader.board, Leader.player);
 			if (stanje == 0) {
 				String ime = "črn";
-				if (Leader.player == 1) ime = "bel";
-				status.setText("Na potezi je " + ime +
-						" - " + Leader.playerType.get(Leader.player));
-			}
-			else {
+				if (Leader.player == 1)
+					ime = "bel";
+				status.setText("Na potezi je " + ime + " - " + Leader.playerType.get(Leader.player));
+			} else {
 				if (Leader.player == 1) {
-					status.setText("Zmagal je črn. " +
-							Leader.playerType.get(-1));
-				}
-				else {
-					status.setText("Zmagal je bel. " +
-							Leader.playerType.get(1));
+					status.setText("Zmagal je črn. " + Leader.playerType.get(-1));
+				} else {
+					status.setText("Zmagal je bel. " + Leader.playerType.get(1));
 				}
 			}
 		}
