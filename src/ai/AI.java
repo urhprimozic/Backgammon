@@ -29,10 +29,7 @@ public class AI extends WhoIsPlaying {
 		
 		double sum = 0;
 		double cuttoff = Math.random();
-		System.out.println(cuttoff);
 		for (Entry<List<Pair<Integer, Integer>>, Float> e : probs.entrySet()) {
-			System.out.print(sum);
-			System.out.println(" " + e.getValue());
 			if (sum + e.getValue() >= cuttoff) {
 				return e.getKey();
 			}

@@ -8,6 +8,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import rules.Board;
 import rules.Game;
@@ -62,13 +63,14 @@ public class MonteCarloTreeSearch {
 		System.out.println("Stevilo simulacij: " + n);
 		
 		String s = Game.stringRepresentation(canonicalBoard, dice);
-		List<List<Pair<Integer, Integer>>> legalMoves = canonicalBoard.getLegalMoves(gamePlayer, dice);
+		List<List<Pair<Integer, Integer>>> legalMoves = canonicalBoard.getLegalMoves(1, dice);
 		Map<List<Pair<Integer, Integer>>, Integer> counts = new HashMap<List<Pair<Integer, Integer>>, Integer>();
 		
 		for (List<Pair<Integer, Integer>> moveOrder : legalMoves) {
 			Pair<String, List<Pair<Integer, Integer>>> sa = new Pair<String, List<Pair<Integer, Integer>>>(s, moveOrder);
 			Pair<Float, Integer> entry = stateActionMap.get(sa);
 			counts.put(moveOrder, entry == null ? 0 : entry.getLast());
+			
 		}
 		
 		pruneTree();
@@ -115,9 +117,6 @@ public class MonteCarloTreeSearch {
 			entry.P = result.getFirst();
 			float v = result.getLast();
 			
-			//int[] valids = Game.getValidMoves(board, dice, gamePLayer);
-			List<List<Pair<Integer, Integer>>> legalMoves = board.getLegalMoves(1, dice);
-			
 			Map<List<Pair<Integer, Integer>>, Float> arr = entry.P;
 			float sum = 0;
 			for (float val : arr.values()) {
@@ -133,12 +132,12 @@ public class MonteCarloTreeSearch {
 				entry.P = new HashMap<List<Pair<Integer, Integer>>, Float>();
 			}
 			
-			entry.V = legalMoves;
+			entry.V = arr.keySet();
 			entry.N = 0;
 			return -v;
 		}
 
-		List<List<Pair<Integer, Integer>>> valids = entry.V;
+		Set<List<Pair<Integer, Integer>>> valids = entry.V;
 		double curBest = -Double.MAX_VALUE;
 		List<Pair<Integer, Integer>> bestAction = new LinkedList<Pair<Integer, Integer>>();
 		

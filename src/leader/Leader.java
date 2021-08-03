@@ -158,6 +158,7 @@ public class Leader {
     					System.out.println();
     					board.executeMove(move);
     				}
+    				System.out.println();
     				player *= -1;
             		movesMade = 0;
             		diceRolled = false;

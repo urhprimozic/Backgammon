@@ -45,7 +45,6 @@ public class Hevristic {
         // propability - TODO mjbi daš trapastim potezam, aka da je slabo postavt enga
         // samega na trikontik
         Map<List<Pair<Integer, Integer>>, Float> p = new HashMap<List<Pair<Integer, Integer>>, Float>();
-        System.out.println("Calculating random propabitliy..");
         for (List<Pair<Integer, Integer>> moveOrder : legalMoves) {
             p.put(moveOrder, (float) Math.random());
         }
