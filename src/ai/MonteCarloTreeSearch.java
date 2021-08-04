@@ -61,8 +61,8 @@ public class MonteCarloTreeSearch {
 		depth += 1;
 		long start = System.currentTimeMillis();
 		int n = 0;
-//		while (start + timeMilli > System.currentTimeMillis()) {
-		while (n < timeMilli) {
+		while (start + timeMilli > System.currentTimeMillis()) {
+//		while (n < 1000) {
 			search(canonicalBoard, dice);
 			n++;
 		}
