@@ -21,10 +21,9 @@ public class MonteCarloTreeSearch {
 	private final double cpuct = 1.0;
 	private final double EPS = 1e-8;
 		
-	private Map<Pair<String, List<Pair<Integer, Integer>>>, Pair<Float, Integer>> stateActionMap;
+	private Map<Pair<String, List<Pair<Integer, Integer>>>, Pair<Double, Integer>> stateActionMap;
 	private Map<String, MCTSMapEntry> stateMap;
 	
-	private int depth;
 	private int gamePlayer;
 	private Hevristic hevristic;
 	
@@ -33,9 +32,8 @@ public class MonteCarloTreeSearch {
 	//	this.nnet = nnet;
 		this.gamePlayer = p;
 		
-		stateActionMap = new HashMap<Pair<String, List<Pair<Integer, Integer>>>, Pair<Float, Integer>>();
+		stateActionMap = new HashMap<Pair<String, List<Pair<Integer, Integer>>>, Pair<Double, Integer>>();
 		stateMap = new HashMap<String, MCTSMapEntry>();
-		depth = 0;
 	}
 	/**
 	 * Sets a new time limit for mcts
@@ -45,24 +43,23 @@ public class MonteCarloTreeSearch {
 		timeMilli = s;
 	}
 
-	private long calcDepth(String s) {
-		return s.chars().filter(c -> c == '1').count() / 2 + 1;
-	}
-	
+
 	public void pruneTree() {
-		stateActionMap.keySet().removeIf(e -> calcDepth(e.getFirst()) < depth);
-		stateMap.keySet().removeIf(e -> calcDepth(e) < depth);
+		if (stateActionMap.size() > 20000) {
+			stateActionMap.clear();
+		}
+		if (stateMap.size() > 20000) {
+			stateMap.clear();
+		}
 	}
 
 	public Map<List<Pair<Integer, Integer>>, Float> getActionProb(Board board, Pair<Integer, Integer> dice) {
 		
 		Board canonicalBoard = Game.getCannonicalForm(board, gamePlayer);	
-		
-		depth += 1;
 		long start = System.currentTimeMillis();
 		int n = 0;
 		while (start + timeMilli > System.currentTimeMillis()) {
-//		while (n < 1000) {
+//		while (n < 10000) {
 			search(canonicalBoard, dice);
 			n++;
 		}
@@ -75,7 +72,7 @@ public class MonteCarloTreeSearch {
 		
 		for (List<Pair<Integer, Integer>> moveOrder : legalMoves) {
 			Pair<String, List<Pair<Integer, Integer>>> sa = new Pair<String, List<Pair<Integer, Integer>>>(s, moveOrder);
-			Pair<Float, Integer> entry = stateActionMap.get(sa);
+			Pair<Double, Integer> entry = stateActionMap.get(sa);
 			counts.put(moveOrder, entry == null ? 0 : entry.getLast());
 			
 		}
@@ -103,7 +100,7 @@ public class MonteCarloTreeSearch {
 		return probs;
 	}
 	
-	public float search(Board board, Pair<Integer, Integer> dice) {
+	public double search(Board board, Pair<Integer, Integer> dice) {
 		String s = Game.stringRepresentation(board, dice);
 		
 		MCTSMapEntry entry = stateMap.get(s);
@@ -113,30 +110,30 @@ public class MonteCarloTreeSearch {
 			stateMap.put(s, entry);
 		}
 		
-		if (entry.E == -Float.MAX_VALUE) {
+		if (entry.E == -Double.MAX_VALUE) {
 			entry.E = Game.getGameEnded(board, 1);
 		}
 		if (entry.E != 0) {
 			return -entry.E;
 		}
 		if (entry.P == null) {
-			Pair<Map<List<Pair<Integer, Integer>>, Float>, Float> result = hevristic.get(board, dice); // nnet.predict(board);
+			Pair<Map<List<Pair<Integer, Integer>>, Double>, Double> result = hevristic.get(board, dice); // nnet.predict(board);
 			entry.P = result.getFirst();
-			float v = result.getLast();
+			double v = result.getLast();
 			
-			Map<List<Pair<Integer, Integer>>, Float> arr = entry.P;
-			float sum = 0;
-			for (float val : arr.values()) {
+			Map<List<Pair<Integer, Integer>>, Double> arr = entry.P;
+			double sum = 0;
+			for (double val : arr.values()) {
 				sum += val;
 			}
 			if (sum > 0) {
-				for (Entry<List<Pair<Integer, Integer>>, Float> e : arr.entrySet()) {
+				for (Entry<List<Pair<Integer, Integer>>, Double> e : arr.entrySet()) {
 					e.setValue(e.getValue() / sum);
 				}
 				entry.P = arr;
 			}
 			else {
-				entry.P = new HashMap<List<Pair<Integer, Integer>>, Float>();
+				entry.P = new HashMap<List<Pair<Integer, Integer>>, Double>();
 			}
 			
 			entry.V = arr.keySet();
@@ -145,13 +142,13 @@ public class MonteCarloTreeSearch {
 		}
 
 		Set<List<Pair<Integer, Integer>>> valids = entry.V;
-		double curBest = -Double.MAX_VALUE;
+		double currBest = -Double.MAX_VALUE;
 		List<Pair<Integer, Integer>> bestAction = new LinkedList<Pair<Integer, Integer>>();
 		
 		for (List<Pair<Integer, Integer>> moveOrder : valids) {
 			double u = 0;
 			Pair<String, List<Pair<Integer, Integer>>> p = new Pair<String, List<Pair<Integer, Integer>>>(s, moveOrder);
-			Pair<Float, Integer> saVal = stateActionMap.get(p);
+			Pair<Double, Integer> saVal = stateActionMap.get(p);
 			
 			if (saVal != null) {
 				double QVal = saVal.getFirst();
@@ -161,8 +158,8 @@ public class MonteCarloTreeSearch {
 			else {
 				u = cpuct * entry.P.get(moveOrder) * Math.sqrt(entry.N + EPS);
 			}
-			if (u > curBest) {
-				curBest = u;
+			if (u > currBest) {
+				currBest = u;
 				bestAction = moveOrder;
 			}
 		}
@@ -172,20 +169,20 @@ public class MonteCarloTreeSearch {
 		Board nextBoard = Game.getNextState(board, a);
 		nextBoard = Game.getCannonicalForm(nextBoard, -1);
 		
-		float v = search(nextBoard, nextBoard.dice);
+		double v = search(nextBoard, nextBoard.dice);
 		
 		Pair<String, List<Pair<Integer, Integer>>> bestCombo = new Pair<String, List<Pair<Integer, Integer>>>(s, a);
-		Pair<Float, Integer> saVal = stateActionMap.get(bestCombo);
+		Pair<Double, Integer> saVal = stateActionMap.get(bestCombo);
 		
 		if (saVal != null) {
-			float QVal = saVal.getFirst();
+			double QVal = saVal.getFirst();
 			int NVal = saVal.getLast();
 			
 			saVal.setFirst((NVal * QVal + v) / (NVal + 1));
 			saVal.setLast(NVal + 1);
 		}
 		else {
-			stateActionMap.put(bestCombo, new Pair<Float, Integer>(v, 1));
+			stateActionMap.put(bestCombo, new Pair<Double, Integer>(v, 1));
 		}
 		entry.N += 1;
 		return -v;

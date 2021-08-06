@@ -183,7 +183,8 @@ public class Board {
 							biggestDice = 7;
 							
 							for (int idx = 0; idx <= 23; ++idx) {
-								board[idx] = new int[] {currBoard[idx][0], currBoard[idx][1]};
+								board[idx][0] = currBoard[idx][0];
+								board[idx][1] = currBoard[idx][1];
 							}
 							whiteChipsCaptured = currWhiteCaptured;
 							blackChipsCaptured = currBlackCaptured;
@@ -200,8 +201,9 @@ public class Board {
 							legalMoves.add(move);
 						}
         	    	}
-	    			for (int idx = 0; idx <= 23; ++idx) {
-						board[idx] = new int[] {startBoard[idx][0], startBoard[idx][1]};
+        	    	for (int idx = 0; idx <= 23; ++idx) {
+						board[idx][0] = startBoard[idx][0];
+						board[idx][1] = startBoard[idx][1];
 					}
 					whiteChipsCaptured = startWhiteCaptured;
 					blackChipsCaptured = startBlackCaptured;
