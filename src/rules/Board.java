@@ -140,7 +140,8 @@ public class Board {
     	int startBlackCaptured = blackChipsCaptured;
     	Pair<Integer, Integer> startOffboard = new Pair<Integer, Integer>(offboard.getFirst(), offboard.getLast());
     	for (int i = 0; i <= 23; ++i) {
-    		startBoard[i] = new int[] {board[i][0], board[i][1]};
+    		startBoard[i][0] = board[i][0];
+    		startBoard[i][1] = board[i][1];
     	}
     	
     	List<List<Pair<Integer, Integer>>> legalMoves = new LinkedList<List<Pair<Integer, Integer>>>();
@@ -230,7 +231,8 @@ public class Board {
         	int midBlackCaptured = blackChipsCaptured;
         	Pair<Integer, Integer> midOffboard = new Pair<Integer, Integer>(offboard.getFirst(), offboard.getLast());
         	for (int i = 0; i <= 23; ++i) {
-        		midBoard[i] = new int[] {board[i][0], board[i][1]};
+        		midBoard[i][0] = board[i][0];
+        		midBoard[i][1] = board[i][1];
         	}
         	
         	for (int i = -1; i <= 24; ++i) {
@@ -244,7 +246,8 @@ public class Board {
         	    	int currBlackCaptured = blackChipsCaptured;
         	    	Pair<Integer, Integer> currOffboard = new Pair<Integer, Integer>(offboard.getFirst(), offboard.getLast());
         	    	for (int k = 0; k <= 23; ++k) {
-        	    		currBoard[k] = new int[] {board[k][0], board[k][1]};
+        	    		currBoard[k][0] = board[k][0];
+        	    		currBoard[k][1] = board[k][1];
         	    	}
         	    	for (int j = -1; j <= 24; ++j) {
         	    		if (!isSensibleStart(j, player)) {
@@ -295,7 +298,8 @@ public class Board {
     		}
         	
         	for (int idx = 0; idx <= 23; ++idx) {
-				board[idx] = new int[] {startBoard[idx][0], startBoard[idx][1]};
+				board[idx][0] = startBoard[idx][0];
+				board[idx][1] = startBoard[idx][1];
 			}
 			whiteChipsCaptured = startWhiteCaptured;
 			blackChipsCaptured = startBlackCaptured;
@@ -341,6 +345,9 @@ public class Board {
             if (numWhiteFinal == 15) {
                 whiteFinal = true;
             }
+            else {
+            	whiteFinal = false;
+            }
         }
         if (blackChipsCaptured != 0) {
             blackFinal = false;
@@ -354,6 +361,9 @@ public class Board {
             numBlackFinal += offboard.getLast();
             if (numBlackFinal == 15) {
                 blackFinal = true;
+            }
+            else {
+            	blackFinal = false;
             }
         }
 
