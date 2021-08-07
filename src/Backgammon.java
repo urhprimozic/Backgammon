@@ -1,18 +1,21 @@
-import gui.MainFrame;
-import leader.Leader;
 /**
+ * talk about the game itself
  * 
+ * @author      Jon Mikoš
+ * @author      Urh Primožič
+ * @version     %I%, %G%
  */
 
-/**
- * @author urh and jon
- *
- */
+import gui.MainFrame;
+import leader.Leader;
+
 public class Backgammon {
 
 	/**
-	 * runs the game
-	 * @param args
+	 * The starting point of this program. Constructs a {@link #MainFrame MainFrame} and
+	 * hands control to {@link #Leader Leader}.
+	 * 
+	 * @param args required for main, not used
 	 */
 	public static void main(String[] args) {
 		MainFrame window = new MainFrame();
