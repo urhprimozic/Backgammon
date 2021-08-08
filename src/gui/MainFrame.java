@@ -7,7 +7,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.HashMap;
 
-import javax.swing.ButtonGroup;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
@@ -17,7 +16,6 @@ import javax.swing.JRadioButtonMenuItem;
 
 import leader.Leader;
 import leader.PlayerType;
-import rules.Game;
 
 /**
  * TODO
@@ -190,7 +188,7 @@ public class MainFrame extends JFrame implements ActionListener {
 		if (Leader.board == null) {
 			status.setText("Igra ni v teku.");
 		} else {
-			double stanje = Game.getGameEnded(Leader.board, Leader.player);
+			double stanje = Leader.board.getGameEnded(Leader.player);
 			if (stanje == 0) {
 				String ime = "črn";
 				if (Leader.player == 1)

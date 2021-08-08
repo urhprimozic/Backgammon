@@ -9,7 +9,6 @@ import javax.swing.SwingWorker;
 import ai.AI;
 import gui.MainFrame;
 import rules.Board;
-import rules.Game;
 import utils.Pair;
 
 /**
@@ -103,7 +102,7 @@ public class Leader {
 	 * <p>
 	 * Runs the game loop.
 	 * </p>
-	 * 
+	 *
 	 * This is done by refreshing the {@link MainFrame}, checking whether the game
 	 * is over and setting <code>humanRound</code> based on if a human or computer
 	 * is playing this turn. If it is a human player's turn, the user interface
@@ -113,7 +112,7 @@ public class Leader {
 	 */
 	public static void play() {
 		frame.refreshGUI();
-		double state = Game.getGameEnded(board, player);
+		double state = board.getGameEnded(player);
 
 		if (state != 0) {
 			return;
@@ -133,7 +132,7 @@ public class Leader {
 
 	/**
 	 * Rolls the dice and sets the appropriate state variables.
-	 * 
+	 *
 	 * This includes:
 	 * <ul>
 	 * <li>calling the <code>Board.rollDice</code> method
@@ -161,10 +160,10 @@ public class Leader {
 	 * Upon updating the state it calls the <code>play</code> method to return to
 	 * the game loop.
 	 * </p>
-	 * 
+	 *
 	 * Should the move be <code>null</code>, this is taken as there being no legal
 	 * moves and the player is passing the turn.
-	 * 
+	 *
 	 * @param move a <code>Pair</code> consisting of the start and end position of
 	 *             the chip
 	 */
@@ -181,8 +180,7 @@ public class Leader {
 						break;
 					}
 				} else {
-					// filter out the legal move orders that do not agree with the already played
-					// moves
+					// filter out the legal move orders that do not agree with the already played moves
 					for (int j = 0; j < movesPlayed.size(); ++j) {
 						if (!movesPlayed.get(j).equals(moveOrder.get(j))) {
 							continue outer_loop;
@@ -219,7 +217,7 @@ public class Leader {
 	 * <p>
 	 * Handles the entire computer player's turn.
 	 * </p>
-	 * 
+	 *
 	 * This is done by constructing a <code>SwingWorker</code> where the
 	 * <code>doInBackground</code> and <code>done</code> methods are overwritten.
 	 * The new <code>doInBackground</code> method rolls the dice, refreshes the user
@@ -251,12 +249,12 @@ public class Leader {
 				}
 				;
 				if (board == startBoard) {
-//    				System.out.println(board.dice.getFirst() + " " + board.dice.getLast());
+					// System.out.println(board.dice.getFirst() + " " + board.dice.getLast());
 					for (Pair<Integer, Integer> move : moveOrder) {
-//    					System.out.println(move.getFirst() + " -> " + move.getLast() + ", ");
+						// System.out.println(move.getFirst() + " -> " + move.getLast() + ", ");
 						board.executeMove(move);
 					}
-//    				System.out.println();
+					// System.out.println();
 					player *= -1;
 					movesMade = 0;
 					diceRolled = false;

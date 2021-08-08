@@ -103,6 +103,24 @@ public class Board {
 	}
 
 	/**
+	 * Checks whether the game has ended.
+	 *
+	 * @param player the player relative to whom the result is given
+	 * @return {@code 1} if {@code player} has won, {@code -1} if {@code player} has
+	 *         lost and 0 otherwise.
+	 */
+	public int getGameEnded(int player) {
+		if (offboard.getFirst() == 15) {
+			return player;
+		} else if (offboard.getLast() == 15) {
+			return -player;
+		} else {
+			return 0;
+		}
+
+	}
+
+	/**
 	 * Checks if there is a chip of color {@code player} at position {@code idx}.
 	 * Since index {@code -1} represents the captured chips for white, it checks for
 	 * any captured white chips. Similarly, since index {@code 24} represents the
