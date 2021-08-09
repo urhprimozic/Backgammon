@@ -157,7 +157,20 @@ public class Board {
 
 	/**
 	 * Calculates all the possible move orders in the current position for the given
-	 * {@code player} and {@code dice}.
+	 * {@code player}.
+	 *
+	 * @param player the player whose moves it considers
+	 * @return A {@code List} of possible move orders. A move order is a
+	 *         {@code List} of moves, where each move is a
+	 *         {@code Pair<Integer, Integer>} of the start and end index.
+	 */
+	public List<List<Pair<Integer, Integer>>> getLegalMoves(int player) {
+		return getLegalMoves(player, dice);
+	}
+
+	/**
+	 * Calculates all the possible move orders in the current position for the given
+	 * {@code player} and with specific {@code dice}.
 	 *
 	 * @param player the player whose moves it considers
 	 * @param dice   a pair of dice that determine the amount of spaces moved

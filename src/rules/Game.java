@@ -13,18 +13,17 @@ public class Game {
 	 * Gets the string representation of the current game to be used as a key in a
 	 * {@code Map}.
 	 *
-	 * @param b    the current board
-	 * @param dice the current dice throw
+	 * @param b the current board
 	 * @return A {@code String} that uniquely describes the current board state.
 	 */
-	public static String stringRepresentation(Board b, Pair<Integer, Integer> dice) {
+	public static String stringRepresentation(Board b) {
 		/*
 		 * each white chip counts as 1, each black chip counts as -1
 		 * format: "{1st dice},{2nd dice},{# of white captured chips},{# chips on triangle 1}, ...,{# chips on triangle 24}, {# of black captured chips}"
 		 */
 		StringBuilder ans = new StringBuilder();
-		ans.append(dice.getFirst()).append(",");
-		ans.append(dice.getLast()).append(",");
+		ans.append(b.dice.getFirst()).append(",");
+		ans.append(b.dice.getLast()).append(",");
 		ans.append(b.whiteChipsCaptured).append(",");
 		for (int i = 0; i <= 23; ++i) {
 			ans.append(b.board[i][0] * b.board[i][1]).append(",");

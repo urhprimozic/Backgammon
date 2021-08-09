@@ -24,9 +24,9 @@ public class MonteCarloTreeSearch {
 	private Map<String, MCTSMapEntry> stateMap;
 
 	private int gamePlayer;
-	private Hevristic hevristic;
+	private Heuristic hevristic;
 
-	public MonteCarloTreeSearch(Hevristic hevristic, int p) {
+	public MonteCarloTreeSearch(Heuristic hevristic, int p) {
 		this.hevristic = hevristic;
 		//	this.nnet = nnet;
 		this.gamePlayer = p;
@@ -53,21 +53,21 @@ public class MonteCarloTreeSearch {
 		}
 	}
 
-	public Map<List<Pair<Integer, Integer>>, Float> getActionProb(Board board, Pair<Integer, Integer> dice) {
+	public Map<List<Pair<Integer, Integer>>, Float> getActionProb(Board board) {
 
 		Board canonicalBoard = Game.getCannonicalForm(board, gamePlayer);
 		long start = System.currentTimeMillis();
 		int n = 0;
 		while (start + timeMilli > System.currentTimeMillis()) {
 			//		while (n < 10000) {
-			search(canonicalBoard, dice);
+			search(canonicalBoard);
 			n++;
 		}
 
 		System.out.println("Stevilo simulacij: " + n);
 
-		String s = Game.stringRepresentation(canonicalBoard, dice);
-		List<List<Pair<Integer, Integer>>> legalMoves = canonicalBoard.getLegalMoves(1, dice);
+		String s = Game.stringRepresentation(canonicalBoard);
+		List<List<Pair<Integer, Integer>>> legalMoves = canonicalBoard.getLegalMoves(1);
 		Map<List<Pair<Integer, Integer>>, Integer> counts = new HashMap<List<Pair<Integer, Integer>>, Integer>();
 
 		for (List<Pair<Integer, Integer>> moveOrder : legalMoves) {
@@ -100,8 +100,8 @@ public class MonteCarloTreeSearch {
 		return probs;
 	}
 
-	public double search(Board board, Pair<Integer, Integer> dice) {
-		String s = Game.stringRepresentation(board, dice);
+	public double search(Board board) {
+		String s = Game.stringRepresentation(board);
 
 		MCTSMapEntry entry = stateMap.get(s);
 
@@ -117,7 +117,7 @@ public class MonteCarloTreeSearch {
 			return -entry.E;
 		}
 		if (entry.P == null) {
-			Pair<Map<List<Pair<Integer, Integer>>, Double>, Double> result = hevristic.get(board, dice); // nnet.predict(board);
+			Pair<Map<List<Pair<Integer, Integer>>, Double>, Double> result = hevristic.get(board); // nnet.predict(board);
 			entry.P = result.getFirst();
 			double v = result.getLast();
 
@@ -167,7 +167,7 @@ public class MonteCarloTreeSearch {
 		Board nextBoard = Game.getNextState(board, a);
 		nextBoard = Game.getCannonicalForm(nextBoard, -1);
 
-		double v = search(nextBoard, nextBoard.dice);
+		double v = search(nextBoard);
 
 		Pair<String, List<Pair<Integer, Integer>>> bestCombo = new Pair<String, List<Pair<Integer, Integer>>>(s, a);
 		Pair<Double, Integer> saVal = stateActionMap.get(bestCombo);
