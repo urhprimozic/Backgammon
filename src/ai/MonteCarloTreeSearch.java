@@ -96,7 +96,7 @@ public class MonteCarloTreeSearch {
 		}
 
 		String s = Game.stringRepresentation(canonicalBoard);
-		List<List<Pair<Integer, Integer>>> legalMoves = canonicalBoard.getLegalMoves(1);
+		Set<List<Pair<Integer, Integer>>> legalMoves = canonicalBoard.getLegalMoves(1);
 		Map<List<Pair<Integer, Integer>>, Integer> counts = new HashMap<List<Pair<Integer, Integer>>, Integer>();
 
 		// store the amount of times each move has been considered

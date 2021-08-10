@@ -163,11 +163,11 @@ public class Board {
 	 * {@code player}.
 	 *
 	 * @param player the player whose moves it considers
-	 * @return A {@code List} of possible move orders. A move order is a
-	 *         {@code List} of moves, where each move is a
-	 *         {@code Pair<Integer, Integer>} of the start and end index.
+	 * @return A {@code Set} of possible move orders. A move order is a {@code List}
+	 *         of moves, where each move is a {@code Pair<Integer, Integer>} of the
+	 *         start and end index.
 	 */
-	public List<List<Pair<Integer, Integer>>> getLegalMoves(int player) {
+	public Set<List<Pair<Integer, Integer>>> getLegalMoves(int player) {
 		return getLegalMoves(player, dice);
 	}
 
@@ -177,11 +177,11 @@ public class Board {
 	 *
 	 * @param player the player whose moves it considers
 	 * @param dice   a pair of dice that determine the amount of spaces moved
-	 * @return A {@code List} of possible move orders. A move order is a
-	 *         {@code List} of moves, where each move is a
-	 *         {@code Pair<Integer, Integer>} of the start and end index.
+	 * @return A {@code Set} of possible move orders. A move order is a {@code List}
+	 *         of moves, where each move is a {@code Pair<Integer, Integer>} of the
+	 *         start and end index.
 	 */
-	public List<List<Pair<Integer, Integer>>> getLegalMoves(int player, Pair<Integer, Integer> dice) {
+	public Set<List<Pair<Integer, Integer>>> getLegalMoves(int player, Pair<Integer, Integer> dice) {
 		/*
 		 * Rules:
 		 *     - If there are captured chips, they must be placed onto the board before any other move can be made.
@@ -207,7 +207,7 @@ public class Board {
 			startBoard[i][1] = board[i][1];
 		}
 
-		List<List<Pair<Integer, Integer>>> legalMoves = new LinkedList<List<Pair<Integer, Integer>>>();
+		Set<List<Pair<Integer, Integer>>> legalMoves = new HashSet<List<Pair<Integer, Integer>>>();
 		int longestSequence = 0;
 		int biggestDice = 0;
 
@@ -304,7 +304,7 @@ public class Board {
 		 *     - we don't have to bother with the rule of using the biggest dice
 		 */
 
-		List<List<Pair<Integer, Integer>>> finalLegalMoves = new LinkedList<List<Pair<Integer, Integer>>>();
+		Set<List<Pair<Integer, Integer>>> finalLegalMoves = new HashSet<List<Pair<Integer, Integer>>>();
 
 		for (List<Pair<Integer, Integer>> moveOrder : legalMoves) {
 			for (Pair<Integer, Integer> move : moveOrder) {

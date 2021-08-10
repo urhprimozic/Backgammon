@@ -3,6 +3,7 @@ package leader;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.swing.SwingWorker;
 
@@ -52,7 +53,7 @@ public class Leader {
 	public static boolean humanRound = true;
 	public static boolean diceRolled = false;
 
-	public static List<List<Pair<Integer, Integer>>> legalMoves = null;
+	public static Set<List<Pair<Integer, Integer>>> legalMoves = null;
 	public static List<Pair<Integer, Integer>> movesPlayed = null;
 	public static int maxMoves = 0;
 
@@ -146,10 +147,24 @@ public class Leader {
 		board.rollDice();
 		diceRolled = true;
 		legalMoves = board.getLegalMoves(player, board.dice);
+
+		System.out.println("GUI: Legal moves for player " + player);
+		for (List<Pair<Integer, Integer>> moveOrder : legalMoves) {
+			System.out.print("GUI: legal move: ");
+			for (int j = 0; j < moveOrder.size(); ++j) {
+				Pair<Integer, Integer> move = moveOrder.get(j);
+				System.out.print(move.getFirst() + " -> " + move.getLast() + ", ");
+			}
+			System.out.println();
+		}
+		System.out.println();
+
+		Set<List<Pair<Integer, Integer>>> legal = board.getLegalMoves(player, board.dice);
+
 		if (legalMoves.size() == 0) {
 			maxMoves = 0;
 		} else {
-			maxMoves = legalMoves.get(0).size();
+			maxMoves = legalMoves.iterator().next().size();
 		}
 		movesPlayed = null;
 	}
@@ -169,8 +184,7 @@ public class Leader {
 	 */
 	public static void playHumanMove(Pair<Integer, Integer> move) {
 		if (move != null) {
-			outer_loop: for (int i = 0; i < legalMoves.size(); ++i) {
-				List<Pair<Integer, Integer>> moveOrder = legalMoves.get(i);
+			outer_loop: for (List<Pair<Integer, Integer>> moveOrder : legalMoves) {
 				if (movesPlayed == null) {
 					// the move needs to be the start of a legal move order
 					if (move.equals(moveOrder.get(0))) {

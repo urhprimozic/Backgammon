@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import rules.Board;
 import utils.Pair;
@@ -35,7 +36,7 @@ public class Heuristic {
 	 */
 	public Pair<Map<List<Pair<Integer, Integer>>, Double>, Double> get(Board board) {
 		Map<List<Pair<Integer, Integer>>, Double> p = new HashMap<List<Pair<Integer, Integer>>, Double>();
-		List<List<Pair<Integer, Integer>>> legalMoves = board.getLegalMoves(1);
+		Set<List<Pair<Integer, Integer>>> legalMoves = board.getLegalMoves(1);
 
 		// store the starting state
 		int[][] currBoard = new int[24][2];
