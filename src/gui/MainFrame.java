@@ -18,8 +18,7 @@ import leader.Leader;
 import leader.PlayerType;
 
 /**
- * TODO
- *
+ * The main window for the game, contains everything else.
  */
 @SuppressWarnings("serial")
 public class MainFrame extends JFrame implements ActionListener {

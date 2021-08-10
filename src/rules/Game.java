@@ -69,7 +69,7 @@ public class Game {
 	 * @param player the player whose perspective we want
 	 * @return A new {@code Board} where {@code player} has the white chips.
 	 */
-	public static Board getCannonicalForm(Board board, int player) {
+	public static Board getCanonicalForm(Board board, int player) {
 		Board canonicalBoard = new Board();
 		// from white's perspective nothing changes, so we just copy the state
 		if (player == 1) {

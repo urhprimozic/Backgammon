@@ -98,8 +98,11 @@ public class Board {
 	 * Sets both dice to a random number from 1 to 6.
 	 */
 	public void rollDice() {
+		//		dice.setFirst(1);
+		//		dice.setLast(1);
 		dice.setFirst(rand.nextInt(6) + 1);
 		dice.setLast(rand.nextInt(6) + 1);
+
 	}
 
 	/**

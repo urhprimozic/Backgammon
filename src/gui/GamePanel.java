@@ -8,13 +8,12 @@ import java.awt.Graphics2D;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
-import java.util.List;
 
 import javax.swing.JPanel;
 
 import leader.Leader;
-import utils.Pair;
 import rules.Board;
+import utils.Pair;
 
 /**
  * Rectangular area with the game field and pieces.
@@ -84,15 +83,14 @@ public class GamePanel extends JPanel implements MouseListener, MouseMotionListe
 	}
 
 	/**
-	 * 
-	 * @return Chip diameter on a current widnow
+	 * @return Chip diameter in pixels on a current widnow
 	 */
 	private int chipSize() {
 		return (int) (Math.round(Math.min(getWidth(), getHeight()) * CHIP_SIZE));
 	}
 
 	/**
-	 * 
+	 *
 	 * @return {width, height} size of the wooden border in pixels
 	 */
 	private int[] woodSize() {
@@ -101,7 +99,7 @@ public class GamePanel extends JPanel implements MouseListener, MouseMotionListe
 	}
 
 	/**
-	 * 
+	 *
 	 * @return font size in pixels
 	 */
 	protected int fontSize() {
@@ -109,7 +107,7 @@ public class GamePanel extends JPanel implements MouseListener, MouseMotionListe
 	}
 
 	private int[] rollPosition() {
-		return new int[] { (getWidth() / 4) - chipSize(), (getHeight() / 2) - (int) (chipSize() / 3) };
+		return new int[] { (getWidth() / 4) - chipSize(), (getHeight() / 2) - chipSize() / 3 };
 	}
 
 	private int[] rollSize() {
@@ -125,8 +123,8 @@ public class GamePanel extends JPanel implements MouseListener, MouseMotionListe
 	}
 
 	/**
-	 * 
-	 * @param i between 0 and 23
+	 *
+	 * @param i between 0 and 23, corresponds to the (i+1)-th triangle
 	 * @return {x, y} coordinates of i-th triangle board[i][]. Coordinates of left
 	 *         corner (upper or lower)
 	 */
@@ -226,10 +224,10 @@ public class GamePanel extends JPanel implements MouseListener, MouseMotionListe
 				else
 					g2.setColor(COLOR_TRIANGLE_BLACK);
 				// TODO - should the border be of a different color?
-				g2.fillPolygon(new int[] { x0, x0 + triangle_w, (int) ((2 * x0 + triangle_w) / 2) }, new int[] {
-						woodSize()[1], woodSize()[1], woodSize()[1] + (int) (TRIANGLE_HEIGHT * getHeight()) }, 3);
-				g2.drawPolygon(new int[] { x0, x0 + triangle_w, (int) ((2 * x0 + triangle_w) / 2) }, new int[] {
-						woodSize()[1], woodSize()[1], woodSize()[1] + (int) (TRIANGLE_HEIGHT * getHeight()) }, 3);
+				g2.fillPolygon(new int[] { x0, x0 + triangle_w, (2 * x0 + triangle_w) / 2 }, new int[] { woodSize()[1],
+						woodSize()[1], woodSize()[1] + (int) (TRIANGLE_HEIGHT * getHeight()) }, 3);
+				g2.drawPolygon(new int[] { x0, x0 + triangle_w, (2 * x0 + triangle_w) / 2 }, new int[] { woodSize()[1],
+						woodSize()[1], woodSize()[1] + (int) (TRIANGLE_HEIGHT * getHeight()) }, 3);
 
 				// lower triangles
 				if (i % 2 == 1)
@@ -237,11 +235,11 @@ public class GamePanel extends JPanel implements MouseListener, MouseMotionListe
 				else
 					g2.setColor(COLOR_TRIANGLE_BLACK);
 				// TODO - should the border be of a different color?
-				g2.fillPolygon(new int[] { x0, x0 + triangle_w, (int) ((2 * x0 + triangle_w) / 2) },
+				g2.fillPolygon(new int[] { x0, x0 + triangle_w, (2 * x0 + triangle_w) / 2 },
 						new int[] { getHeight() - woodSize()[1], getHeight() - woodSize()[1],
 								getHeight() - woodSize()[1] - (int) (TRIANGLE_HEIGHT * getHeight()) },
 						3);
-				g2.drawPolygon(new int[] { x0, x0 + triangle_w, (int) ((2 * x0 + triangle_w) / 2) },
+				g2.drawPolygon(new int[] { x0, x0 + triangle_w, (2 * x0 + triangle_w) / 2 },
 						new int[] { getHeight() - woodSize()[1], getHeight() - woodSize()[1],
 								getHeight() - woodSize()[1] - (int) (TRIANGLE_HEIGHT * getHeight()) },
 						3);
@@ -250,7 +248,7 @@ public class GamePanel extends JPanel implements MouseListener, MouseMotionListe
 			// BEARING OFF
 			// ----------------------------------------------------------
 			g2.setColor(COLOR_TEXT);
-			g2.setFont(g2.getFont().deriveFont((float) fontSize() * (float) 0.5));
+			g2.setFont(g2.getFont().deriveFont(fontSize() * (float) 0.5));
 			g2.drawString("CHIPS", (int) (stringRemovedPosition()[0] + fontSize() / 1.42),
 					(int) (stringRemovedPosition()[1] - fontSize() * 0.5));
 			g2.drawString("OFF BOARD", stringRemovedPosition()[0], stringRemovedPosition()[1]);
@@ -309,22 +307,25 @@ public class GamePanel extends JPanel implements MouseListener, MouseMotionListe
 				g2.setFont(g2.getFont().deriveFont((float) fontSize()));
 				g2.setColor(TEXT_B);
 				g2.drawString("ROLL!", stringRollPosition()[0], stringRollPosition()[1]);
-			}
-			else {
+			} else {
 				int spacing = ((int) (GREEN_WIDTH * getWidth()) - 2 * chipSize()) / 3;
 
 				g2.setColor(COLOR_W);
-				g2.fillRoundRect(woodSize()[0] + spacing, getHeight() / 2 - chipSize() / 2, chipSize(), chipSize(), chipSize() / 4, chipSize() / 4);
-				g2.fillRoundRect(woodSize()[0] + 2 * spacing + chipSize(), getHeight() / 2 - chipSize() / 2, chipSize(), chipSize(), chipSize() / 4, chipSize() / 4);
-				
+				g2.fillRoundRect(woodSize()[0] + spacing, getHeight() / 2 - chipSize() / 2, chipSize(), chipSize(),
+						chipSize() / 4, chipSize() / 4);
+				g2.fillRoundRect(woodSize()[0] + 2 * spacing + chipSize(), getHeight() / 2 - chipSize() / 2, chipSize(),
+						chipSize(), chipSize() / 4, chipSize() / 4);
+
 				g2.setColor(COLOR_OUTLINE);
-				g2.drawRoundRect(woodSize()[0] + spacing, getHeight() / 2 - chipSize() / 2, chipSize(), chipSize(), chipSize() / 4, chipSize() / 4);
-				g2.drawRoundRect(woodSize()[0] + 2 * spacing + chipSize(), getHeight() / 2 - chipSize() / 2, chipSize(), chipSize(), chipSize() / 4, chipSize() / 4);
-				
+				g2.drawRoundRect(woodSize()[0] + spacing, getHeight() / 2 - chipSize() / 2, chipSize(), chipSize(),
+						chipSize() / 4, chipSize() / 4);
+				g2.drawRoundRect(woodSize()[0] + 2 * spacing + chipSize(), getHeight() / 2 - chipSize() / 2, chipSize(),
+						chipSize(), chipSize() / 4, chipSize() / 4);
+
 				g2.setFont(g2.getFont().deriveFont((float) fontSize()));
 				g2.setColor(TEXT_B);
-				g2.drawString(String.valueOf(board.dice.getFirst()),
-						woodSize()[0] + spacing + chipSize() * 7 / 24, getHeight() / 2 + chipSize() / 4);
+				g2.drawString(String.valueOf(board.dice.getFirst()), woodSize()[0] + spacing + chipSize() * 7 / 24,
+						getHeight() / 2 + chipSize() / 4);
 				g2.drawString(String.valueOf(board.dice.getLast()),
 						woodSize()[0] + 2 * spacing + chipSize() + chipSize() * 7 / 24,
 						getHeight() / 2 + chipSize() / 4);
@@ -381,27 +382,36 @@ public class GamePanel extends JPanel implements MouseListener, MouseMotionListe
 				if (num >= 6) {
 					if (color == 1) {
 						g2.setColor(TEXT_B);
-					}
-					else {
+					} else {
 						g2.setColor(TEXT_W);
 					}
 					g2.setFont(g2.getFont().deriveFont((float) fontSize()));
 					// top row
 					if (i >= 12) {
 						if (num - 4 < 10) {
-							g2.drawString(String.valueOf(num - 4), triangleCoordinates(i)[0] + (chipSize() / 3) + ((int) (getWidth() * TRIANGLE_WIDTH) - chipSize()) / 2, triangleCoordinates(i)[1] + chipSize() * 3 / 4);
-						}
-						else {
-							g2.drawString(String.valueOf(num - 4), triangleCoordinates(i)[0] + (chipSize() / 12) + ((int) (getWidth() * TRIANGLE_WIDTH) - chipSize()) / 2, triangleCoordinates(i)[1] + chipSize() * 3 / 4);
+							g2.drawString(String.valueOf(num - 4),
+									triangleCoordinates(i)[0] + (chipSize() / 3)
+											+ ((int) (getWidth() * TRIANGLE_WIDTH) - chipSize()) / 2,
+									triangleCoordinates(i)[1] + chipSize() * 3 / 4);
+						} else {
+							g2.drawString(String.valueOf(num - 4),
+									triangleCoordinates(i)[0] + (chipSize() / 12)
+											+ ((int) (getWidth() * TRIANGLE_WIDTH) - chipSize()) / 2,
+									triangleCoordinates(i)[1] + chipSize() * 3 / 4);
 						}
 					}
 					// bottom row
 					else {
 						if (num - 4 < 10) {
-							g2.drawString(String.valueOf(num - 4), triangleCoordinates(i)[0] + (chipSize() / 3) + ((int) (getWidth() * TRIANGLE_WIDTH) - chipSize()) / 2, triangleCoordinates(i)[1] - chipSize() / 4);
-						}
-						else {
-							g2.drawString(String.valueOf(num - 4), triangleCoordinates(i)[0] + (chipSize() / 12) + ((int) (getWidth() * TRIANGLE_WIDTH) - chipSize()) / 2, triangleCoordinates(i)[1] - chipSize() / 4);
+							g2.drawString(String.valueOf(num - 4),
+									triangleCoordinates(i)[0] + (chipSize() / 3)
+											+ ((int) (getWidth() * TRIANGLE_WIDTH) - chipSize()) / 2,
+									triangleCoordinates(i)[1] - chipSize() / 4);
+						} else {
+							g2.drawString(String.valueOf(num - 4),
+									triangleCoordinates(i)[0] + (chipSize() / 12)
+											+ ((int) (getWidth() * TRIANGLE_WIDTH) - chipSize()) / 2,
+									triangleCoordinates(i)[1] - chipSize() / 4);
 						}
 					}
 				}
@@ -421,11 +431,11 @@ public class GamePanel extends JPanel implements MouseListener, MouseMotionListe
 
 			g2.setColor(TEXT_B);
 			if (board.whiteChipsCaptured < 10) {
-				g2.drawString(String.valueOf(board.whiteChipsCaptured),
-						(int) (getWidth() / 2 - (chipSize() / 4.8)), getHeight() / 2 - (chipSize() / 4));
+				g2.drawString(String.valueOf(board.whiteChipsCaptured), (int) (getWidth() / 2 - (chipSize() / 4.8)),
+						getHeight() / 2 - (chipSize() / 4));
 			} else {
-				g2.drawString(String.valueOf(board.whiteChipsCaptured),
-						(int) (getWidth() / 2 - (chipSize() / 2.4)), getHeight() / 2 - (chipSize() / 4));
+				g2.drawString(String.valueOf(board.whiteChipsCaptured), (int) (getWidth() / 2 - (chipSize() / 2.4)),
+						getHeight() / 2 - (chipSize() / 4));
 			}
 
 			g2.setColor(COLOR_B);
@@ -439,11 +449,11 @@ public class GamePanel extends JPanel implements MouseListener, MouseMotionListe
 
 			g2.setColor(TEXT_W);
 			if (board.blackChipsCaptured < 10) {
-				g2.drawString(String.valueOf(board.blackChipsCaptured),
-						(int) (getWidth() / 2 - (chipSize() / 4.8)), getHeight() / 2 - (chipSize() / 4) + chipSize());
+				g2.drawString(String.valueOf(board.blackChipsCaptured), (int) (getWidth() / 2 - (chipSize() / 4.8)),
+						getHeight() / 2 - (chipSize() / 4) + chipSize());
 			} else {
-				g2.drawString(String.valueOf(board.blackChipsCaptured),
-						(int) (getWidth() / 2 - (chipSize() / 2.4)), getHeight() / 2 - (chipSize() / 4) + chipSize());
+				g2.drawString(String.valueOf(board.blackChipsCaptured), (int) (getWidth() / 2 - (chipSize() / 2.4)),
+						getHeight() / 2 - (chipSize() / 4) + chipSize());
 			}
 
 			// active chip
@@ -460,7 +470,7 @@ public class GamePanel extends JPanel implements MouseListener, MouseMotionListe
 		} else
 			noGame.draw(g, COLOR_BACKGROUND, COLOR_B, Color.WHITE, getWidth() / 7, getHeight() / 5, 5 * getWidth() / 7,
 					3 * getHeight() / 5);
-		
+
 		// TODO ne tega u log pisat k lah da kod ni tosd kul
 		// System.out.println("GUI: Nč nam risu k nč ni za risat bučko");
 	}
@@ -570,22 +580,21 @@ public class GamePanel extends JPanel implements MouseListener, MouseMotionListe
 		int y = e.getY();
 		Board board = Leader.board;
 		if (board != null && !Leader.diceRolled && Leader.humanRound) {
-			if (x >= rollPosition()[0] && x <= rollPosition()[0] + rollSize()[0] &&
-				y >= rollPosition()[1] && y <= rollPosition()[1] + rollSize()[1])
-			{
+			if (x >= rollPosition()[0] && x <= rollPosition()[0] + rollSize()[0] && y >= rollPosition()[1]
+					&& y <= rollPosition()[1] + rollSize()[1]) {
 				Leader.rollDice();
-				
-				System.out.println("GUI: Legal moves for player " + Leader.player);
-				List<List<Pair<Integer, Integer>>> legal = board.getLegalMoves(Leader.player, board.dice);
-				for (int i = 0; i < legal.size(); ++i) {
-					System.out.print("GUI: legal move: ");
-					List<Pair<Integer, Integer>> moveOrder = legal.get(i);
-					for (int j = 0; j < moveOrder.size(); ++j) {
-						Pair<Integer, Integer> move = moveOrder.get(j);
-						System.out.print(move.getFirst() + " -> " + move.getLast() + ", ");
-					}
-					System.out.println();
-				}
+
+				//				System.out.println("GUI: Legal moves for player " + Leader.player);
+				//				List<List<Pair<Integer, Integer>>> legal = board.getLegalMoves(Leader.player, board.dice);
+				//				for (int i = 0; i < legal.size(); ++i) {
+				//					System.out.print("GUI: legal move: ");
+				//					List<Pair<Integer, Integer>> moveOrder = legal.get(i);
+				//					for (int j = 0; j < moveOrder.size(); ++j) {
+				//						Pair<Integer, Integer> move = moveOrder.get(j);
+				//						System.out.print(move.getFirst() + " -> " + move.getLast() + ", ");
+				//					}
+				//					System.out.println();
+				//				}
 			}
 		}
 	}
@@ -606,8 +615,7 @@ public class GamePanel extends JPanel implements MouseListener, MouseMotionListe
 				System.out.println("Bearing off..");
 				if (activeChipColor == 1) {
 					Leader.playHumanMove(new Pair<Integer, Integer>(activeChipIndex, 24));
-				}
-				else {
+				} else {
 					Leader.playHumanMove(new Pair<Integer, Integer>(activeChipIndex, -1));
 				}
 
@@ -644,8 +652,7 @@ public class GamePanel extends JPanel implements MouseListener, MouseMotionListe
 					return;
 				}
 				Leader.playHumanMove(new Pair<Integer, Integer>(activeChipIndex, i));
-			}
-			else {
+			} else {
 				Leader.playHumanMove(null); // just to make the no legal move scenario more intuitive
 				System.out.println("GUI: Not released on a triangle");
 			}
