@@ -148,16 +148,16 @@ public class Leader {
 		diceRolled = true;
 		legalMoves = board.getLegalMoves(player, board.dice);
 
-		System.out.println("GUI: Legal moves for player " + player);
-		for (List<Pair<Integer, Integer>> moveOrder : legalMoves) {
-			System.out.print("GUI: legal move: ");
-			for (int j = 0; j < moveOrder.size(); ++j) {
-				Pair<Integer, Integer> move = moveOrder.get(j);
-				System.out.print(move.getFirst() + " -> " + move.getLast() + ", ");
-			}
-			System.out.println();
-		}
-		System.out.println();
+		//		System.out.println("GUI: Legal moves for player " + player);
+		//		for (List<Pair<Integer, Integer>> moveOrder : legalMoves) {
+		//			System.out.print("GUI: legal move: ");
+		//			for (int j = 0; j < moveOrder.size(); ++j) {
+		//				Pair<Integer, Integer> move = moveOrder.get(j);
+		//				System.out.print(move.getFirst() + " -> " + move.getLast() + ", ");
+		//			}
+		//			System.out.println();
+		//		}
+		//		System.out.println();
 
 		Set<List<Pair<Integer, Integer>>> legal = board.getLegalMoves(player, board.dice);
 

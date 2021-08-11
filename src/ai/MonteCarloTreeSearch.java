@@ -108,6 +108,8 @@ public class MonteCarloTreeSearch {
 
 		}
 		// we can clean up the tree only after counting up the visits
+		System.out.println("state action map: " + stateActionMap.size());
+		System.out.println("state map: " + stateMap.size());
 		pruneTree();
 
 		// sum up the number of visits
