@@ -27,7 +27,11 @@ public class MonteCarloTreeSearch {
 	private int timeMilli = 1000;
 	private final double cpuct = 1.0;
 	private final double EPS = 1e-8;
-
+	/**
+	 * Maximal number of recursive calls in {@code search()} allowed. When excedeed,
+	 * searching is stopped and hevristic is used to update {@code entry}.
+	 */
+	private final int STACK_LIMIT = 120;
 	/**
 	 * <p>
 	 * Keeps track of the move evaluation and the number of visits for a given move
@@ -92,7 +96,7 @@ public class MonteCarloTreeSearch {
 		long start = System.currentTimeMillis();
 		// perform Monte Carlo searches for as long as timeMilli allows
 		while (start + timeMilli > System.currentTimeMillis()) {
-			search(canonicalBoard);
+			search(canonicalBoard, 0);
 		}
 
 		String s = Game.stringRepresentation(canonicalBoard);
@@ -108,8 +112,6 @@ public class MonteCarloTreeSearch {
 
 		}
 		// we can clean up the tree only after counting up the visits
-		System.out.println("state action map: " + stateActionMap.size());
-		System.out.println("state map: " + stateMap.size());
 		pruneTree();
 
 		// sum up the number of visits
@@ -140,10 +142,11 @@ public class MonteCarloTreeSearch {
 	 * Gets the negative value of the evaluation of the current canonical form. This
 	 * is the main MCTS loop.
 	 *
-	 * @param board the canonical form of the board
+	 * @param board the canonical form of the board depth current depth
 	 * @return The evaluation of the current canonical form.
 	 */
-	public double search(Board board) {
+	public double search(Board board, int depth) {
+
 		String s = Game.stringRepresentation(board);
 		MCTSMapEntry entry = stateMap.get(s);
 
@@ -184,6 +187,14 @@ public class MonteCarloTreeSearch {
 			return -v;
 		}
 
+		if (depth > STACK_LIMIT) {
+			System.out.println("Exceeded stack limit. Exiting search..");
+			Pair<Map<List<Pair<Integer, Integer>>, Double>, Double> result = heuristic.get(board);
+			entry.P = result.getFirst();
+			double v = result.getLast();
+			return -v / 10;
+		}
+
 		Set<List<Pair<Integer, Integer>>> valids = entry.V;
 		double currBest = -Double.MAX_VALUE;
 		List<Pair<Integer, Integer>> bestAction = new LinkedList<Pair<Integer, Integer>>();
@@ -215,7 +226,7 @@ public class MonteCarloTreeSearch {
 		nextBoard = Game.getCanonicalForm(nextBoard, -1);
 
 		// the value of the current state is the negative evaluation of the next state
-		double v = search(nextBoard);
+		double v = search(nextBoard, depth + 1);
 
 		Pair<String, List<Pair<Integer, Integer>>> bestCombo = new Pair<String, List<Pair<Integer, Integer>>>(s,
 				bestAction);
