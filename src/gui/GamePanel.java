@@ -79,7 +79,7 @@ public class GamePanel extends JPanel implements MouseListener, MouseMotionListe
 		activeChip = false;
 
 		// popups:
-		noGame = new PopUp("Dobrodošli v igri Backgammon", "Izberite igro v meniju", this);
+		noGame = new PopUp("Welcome to Backgammon", "Pick a game from the menu", this);
 	}
 
 	/**

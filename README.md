@@ -21,7 +21,7 @@ Code is inside `src`.  Run `src/Backgammon.java` for the game. Seperate packages
 Computer player uses Monte Carlo Tree Search with intuitive hevristic. Heavily inspired by the work at [alpha zero general](https://github.com/suragnair/alpha-zero-general).
 
 ## Usage 
-Game menus are in Slovene. To play a new game, select player type from the **Nova igra** menu. To change the difficulty of computer player, click **Težavnost**.
+To play a new game, select player type from the **New game** menu. To change the difficulty of computer player, click **AI dificulty**.
 
 To make a move, first click **ROLL DICE**, than click and drag desired movable chip to a desired location. Off board chips are stored on the right side, removed chips are on the wood in the middle.
 

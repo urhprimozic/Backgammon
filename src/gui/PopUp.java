@@ -30,7 +30,7 @@ public class PopUp {
         g2.drawRect(x, y, width, height);
         // title
         g2.setColor(cTitle);
-        g2.setFont(g2.getFont().deriveFont((float) (width / (0.6 * title.length()))));
+        g2.setFont(g2.getFont().deriveFont((float) (width / (0.8 * title.length()))));
         int h = (int) (g2.getFontMetrics().getStringBounds(title, g).getHeight());
         int w = (int) (g2.getFontMetrics().getStringBounds(title, g).getWidth());
         g2.drawString(title, x + width / 2 - w / 2, y + height / 3 - h / 2);

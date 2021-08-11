@@ -59,23 +59,23 @@ public class MainFrame extends JFrame implements ActionListener {
 		this.setJMenuBar(menu_bar);
 
 		// new game
-		JMenu new_game_menu = new JMenu("Nova igra");
+		JMenu new_game_menu = new JMenu("New game");
 		menu_bar.add(new_game_menu);
-		button_HC = new JMenuItem("Človek – računalnik");
+		button_HC = new JMenuItem("Human - computer");
 		new_game_menu.add(button_HC);
 		button_HC.addActionListener(this);
-		button_CH = new JMenuItem("Računalnik – človek");
+		button_CH = new JMenuItem("Computer - human");
 		new_game_menu.add(button_CH);
 		button_CH.addActionListener(this);
-		button_HH = new JMenuItem("Človek – človek");
+		button_HH = new JMenuItem("Human - human");
 		new_game_menu.add(button_HH);
 		button_HH.addActionListener(this);
-		button_CC = new JMenuItem("Računalnik – računalnik");
+		button_CC = new JMenuItem("Computer - Computer");
 		new_game_menu.add(button_CC);
 		button_CC.addActionListener(this);
 
 		// ai difficulty
-		JMenu dificulty_menu = new JMenu("Težavnost");
+		JMenu dificulty_menu = new JMenu("AI difficulty");
 		menu_bar.add(dificulty_menu);
 
 		rbEasy = new JRadioButtonMenuItem("Easy");
