@@ -98,10 +98,10 @@ public class Board {
 	 * Sets both dice to a random number from 1 to 6.
 	 */
 	public void rollDice() {
-		//		dice.setFirst(1);
-		//		dice.setLast(1);
-		dice.setFirst(rand.nextInt(6) + 1);
-		dice.setLast(rand.nextInt(6) + 1);
+		dice.setFirst(1);
+		dice.setLast(1);
+		//		dice.setFirst(rand.nextInt(6) + 1);
+		//		dice.setLast(rand.nextInt(6) + 1);
 
 	}
 
@@ -121,29 +121,6 @@ public class Board {
 			return 0;
 		}
 
-	}
-
-	/**
-	 * Checks if there is a chip of color {@code player} at position {@code idx}.
-	 * Since index {@code -1} represents the captured chips for white, it checks for
-	 * any captured white chips. Similarly, since index {@code 24} represents the
-	 * captured chips for black, it checks for any captured black chips.
-	 *
-	 * @param idx    the starting index
-	 * @param player the player who we are checking for
-	 * @return Whether there is a chip of color {@code player} at position
-	 *         {@code idx}.
-	 */
-	private boolean isSensibleStart(int idx, int player) {
-		if (idx == -1) {
-			return (player == 1 && whiteChipsCaptured != 0);
-		} else if (idx == 24) {
-			return (player == -1 && blackChipsCaptured != 0);
-		} else if (idx < -1 || idx > 24) {
-			return false;
-		} else {
-			return board[idx][1] == player;
-		}
 	}
 
 	/**
@@ -218,9 +195,6 @@ public class Board {
 
 		for (Pair<Integer, Integer> diceOrder : diceOrders) {
 			for (int i = -1; i <= 24; ++i) {
-				if (!isSensibleStart(i, player)) {
-					continue;
-				}
 				Pair<Integer, Integer> move1 = new Pair<Integer, Integer>(i,
 						getEndTriangle(i, diceOrder.getFirst(), player));
 				if (executeMove(move1)) {
@@ -237,9 +211,6 @@ public class Board {
 					}
 
 					for (int j = -1; j <= 24; ++j) {
-						if (!isSensibleStart(j, player)) {
-							continue;
-						}
 						Pair<Integer, Integer> move2 = new Pair<Integer, Integer>(j,
 								getEndTriangle(j, diceOrder.getLast(), player));
 						if (executeMove(move2)) {
@@ -322,9 +293,6 @@ public class Board {
 			}
 
 			for (int i = -1; i <= 24; ++i) {
-				if (!isSensibleStart(i, player)) {
-					continue;
-				}
 				Pair<Integer, Integer> move1 = new Pair<Integer, Integer>(i,
 						getEndTriangle(i, dice.getFirst(), player));
 				if (executeMove(move1)) {
@@ -341,9 +309,6 @@ public class Board {
 					}
 
 					for (int j = -1; j <= 24; ++j) {
-						if (!isSensibleStart(j, player)) {
-							continue;
-						}
 						Pair<Integer, Integer> move2 = new Pair<Integer, Integer>(j,
 								getEndTriangle(j, dice.getLast(), player));
 						if (executeMove(move2)) {
@@ -443,7 +408,6 @@ public class Board {
 	 *             </ul>
 	 * @return Whether the move was successfully executed.
 	 */
-
 	public boolean executeMove(Pair<Integer, Integer> move) {
 		int start = move.getFirst();
 		int end = move.getLast();
@@ -507,9 +471,17 @@ public class Board {
 			// System.out.println("End position too small!");
 			return false;
 		}
-		if (start >= 25) {
+		if (end >= 25) {
 			// System.out.println(errorMsg);
 			// System.out.println("End position too large!");
+			return false;
+		}
+
+		// preventing index out of bounds errors in other parts
+		if ((start == -1 && end == -1) || (start == -1 && end == 24) || (start == 24 && end == -1)
+				|| (start == 24 && end == 24)) {
+			// System.out.println(errorMsg);
+			// System.out.println("Both start and end imply special moves!");
 			return false;
 		}
 
