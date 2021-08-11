@@ -65,7 +65,7 @@ public class AI extends WhoIsPlaying {
 			sum += e.getValue();
 		}
 		// in case there is some problems with float arithmetic, return a legal move order with uniform probability
-		System.out.println("probs failed");
+		// System.out.println("probs failed");
 		return (List<Pair<Integer, Integer>>) probs.keySet().toArray()[(int) (Math.random() * probs.size())];
 	}
 }

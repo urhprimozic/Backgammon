@@ -70,13 +70,13 @@ public class MonteCarloTreeSearch {
 
 	/**
 	 * Clears the saved nodes when there are too many of them. In this case when
-	 * there are over {@code 20000}. (There are smarter ways of doing this)
+	 * there are over {@code 10000}. (There are smarter ways of doing this)
 	 */
 	public void pruneTree() {
-		if (stateActionMap.size() > 20000) {
+		if (stateActionMap.size() > 10000) {
 			stateActionMap.clear();
 		}
-		if (stateMap.size() > 20000) {
+		if (stateMap.size() > 10000) {
 			stateMap.clear();
 		}
 	}
@@ -188,7 +188,7 @@ public class MonteCarloTreeSearch {
 		}
 
 		if (depth > STACK_LIMIT) {
-			System.out.println("Exceeded stack limit. Exiting search..");
+			// System.out.println("Exceeded stack limit. Exiting search..");
 			Pair<Map<List<Pair<Integer, Integer>>, Double>, Double> result = heuristic.get(board);
 			entry.P = result.getFirst();
 			double v = result.getLast();

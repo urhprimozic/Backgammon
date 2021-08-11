@@ -477,14 +477,14 @@ public class GamePanel extends JPanel implements MouseListener, MouseMotionListe
 
 	@Override
 	public void mousePressed(MouseEvent e) {
-		System.out.println("GUI: mouse pressed");
+		// System.out.println("GUI: mouse pressed");
 		Board board = Leader.board;
 		if (board != null) {
 			if (Leader.humanRound && Leader.diceRolled) {
 				int x = e.getX();
 				int y = e.getY();
 				// checks all the top chips for the click
-				System.out.println("GUI: \tNa vrsti: " + Leader.player);
+				// System.out.println("GUI: \tNa vrsti: " + Leader.player);
 				for (int i = 0; i < 24; i++) {// cheks all the triangels
 					// num of chips and colors in the triangle
 					int num = board.board[i][0];
@@ -508,10 +508,8 @@ public class GamePanel extends JPanel implements MouseListener, MouseMotionListe
 					int dw = chipSize() / 2;
 					int r = dw + CLICK_MARGIN;// click margin is a bad idea with the current setup
 					if ((x0 + dw - x) * (x0 + dw - x) + (y0 + dw - y) * (y0 + dw - y) <= r * r) {
-						if (color != Leader.player) {
-							System.out.println("GUI: Misclick - tried to move a different chip\n\tTODO ukren neki");
-						} else {
-							System.out.println("GUI: Top chip selected!");
+						if (color == Leader.player) {
+							// System.out.println("GUI: Top chip selected!");
 							activeChip = true;
 							activeChipColor = color;
 							activeChipIndex = i;
@@ -531,10 +529,8 @@ public class GamePanel extends JPanel implements MouseListener, MouseMotionListe
 				int whitex0 = getWidth() / 2 - chipSize() / 2;
 				int whitey0 = getHeight() / 2 - chipSize();
 				if ((whitex0 + dw - x) * (whitex0 + dw - x) + (whitey0 + dw - y) * (whitey0 + dw - y) <= r * r) {
-					if (Leader.player != 1) {
-						System.out.println("GUI: Misclick - tried to move a different chip\n\tTODO ukren neki");
-					} else {
-						System.out.println("GUI: White captured chip selected!");
+					if (Leader.player == 1) {
+						// System.out.println("GUI: White captured chip selected!");
 						activeChip = true;
 						activeChipColor = 1;
 						activeChipIndex = -1;
@@ -551,10 +547,8 @@ public class GamePanel extends JPanel implements MouseListener, MouseMotionListe
 				int blackx0 = getWidth() / 2 - chipSize() / 2;
 				int blacky0 = getHeight() / 2;
 				if ((blackx0 + dw - x) * (blackx0 + dw - x) + (blacky0 + dw - y) * (blacky0 + dw - y) <= r * r) {
-					if (Leader.player != -1) {
-						System.out.println("GUI: Misclick - tried to move a different chip\n\tTODO ukren neki");
-					} else {
-						System.out.println("GUI: Black captured chip selected!");
+					if (Leader.player == -1) {
+						// System.out.println("GUI: Black captured chip selected!");
 						activeChip = true;
 						activeChipColor = -1;
 						activeChipIndex = 24;
@@ -568,7 +562,7 @@ public class GamePanel extends JPanel implements MouseListener, MouseMotionListe
 				}
 
 				// This kind of click does nothing.
-				System.out.println("GUI: Misclick on (" + x + ", " + y + ")");
+				// System.out.println("GUI: Misclick on (" + x + ", " + y + ")");
 				// System.out.println("");
 			}
 		}
@@ -612,7 +606,7 @@ public class GamePanel extends JPanel implements MouseListener, MouseMotionListe
 							&& x < 3 * woodSize()[0] + GREEN_WIDTH * getWidth()))
 					|| (y < woodSize()[1] || y > getHeight() - woodSize()[1])) {
 				// wood - try to drop one there
-				System.out.println("Bearing off..");
+				// System.out.println("Bearing off..");
 				if (activeChipColor == 1) {
 					Leader.playHumanMove(new Pair<Integer, Integer>(activeChipIndex, 24));
 				} else {
@@ -627,7 +621,7 @@ public class GamePanel extends JPanel implements MouseListener, MouseMotionListe
 					(y > triangleCoordinates(0)[1])) // wooden bottom row
 			{
 				Leader.playHumanMove(null); // just to make the no legal move scenario more intuitive
-				System.out.println("GUI: Not released on a triangle");
+				// System.out.println("GUI: Not released on a triangle");
 			}
 			// Indicies 0 to 11
 			else if (y > (1 - TRIANGLE_HEIGHT) * getHeight() - woodSize()[1]) {
@@ -654,7 +648,7 @@ public class GamePanel extends JPanel implements MouseListener, MouseMotionListe
 				Leader.playHumanMove(new Pair<Integer, Integer>(activeChipIndex, i));
 			} else {
 				Leader.playHumanMove(null); // just to make the no legal move scenario more intuitive
-				System.out.println("GUI: Not released on a triangle");
+				// System.out.println("GUI: Not released on a triangle");
 			}
 		}
 	}

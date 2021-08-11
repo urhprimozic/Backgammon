@@ -133,6 +133,29 @@ public class Board {
 	}
 
 	/**
+	 * Checks if there is a chip of color {@code player} at position {@code idx}.
+	 * Since index {@code -1} represents the captured chips for white, it checks for
+	 * any captured white chips. Similarly, since index {@code 24} represents the
+	 * captured chips for black, it checks for any captured black chips.
+	 *
+	 * @param idx    the starting index
+	 * @param player the player who we are checking for
+	 * @return Whether there is a chip of color {@code player} at position
+	 *         {@code idx}.
+	 */
+	private boolean isPlayerChipAtIndex(int idx, int player) {
+		if (idx == -1) {
+			return (player == 1 && whiteChipsCaptured != 0);
+		} else if (idx == 24) {
+			return (player == -1 && blackChipsCaptured != 0);
+		} else if (idx < -1 || idx > 24) {
+			return false;
+		} else {
+			return board[idx][1] == player;
+		}
+	}
+
+	/**
 	 * Calculates all the possible move orders in the current position for the given
 	 * {@code player}.
 	 *
@@ -194,7 +217,7 @@ public class Board {
 			for (int i = -1; i <= 24; ++i) {
 				Pair<Integer, Integer> move1 = new Pair<Integer, Integer>(i,
 						getEndTriangle(i, diceOrder.getFirst(), player));
-				if (executeMove(move1)) {
+				if (isPlayerChipAtIndex(i, player) && executeMove(move1)) {
 
 					// save the state after the first move
 					int[][] currBoard = new int[24][2];
@@ -210,7 +233,7 @@ public class Board {
 					for (int j = -1; j <= 24; ++j) {
 						Pair<Integer, Integer> move2 = new Pair<Integer, Integer>(j,
 								getEndTriangle(j, diceOrder.getLast(), player));
-						if (executeMove(move2)) {
+						if (isPlayerChipAtIndex(j, player) && executeMove(move2)) {
 
 							// we found a legal move order
 							List<Pair<Integer, Integer>> moveOrder = new LinkedList<Pair<Integer, Integer>>();
@@ -292,7 +315,7 @@ public class Board {
 			for (int i = -1; i <= 24; ++i) {
 				Pair<Integer, Integer> move1 = new Pair<Integer, Integer>(i,
 						getEndTriangle(i, dice.getFirst(), player));
-				if (executeMove(move1)) {
+				if (isPlayerChipAtIndex(i, player) && executeMove(move1)) {
 
 					// save the state after the third move
 					int[][] currBoard = new int[24][2];
@@ -308,7 +331,7 @@ public class Board {
 					for (int j = -1; j <= 24; ++j) {
 						Pair<Integer, Integer> move2 = new Pair<Integer, Integer>(j,
 								getEndTriangle(j, dice.getLast(), player));
-						if (executeMove(move2)) {
+						if (isPlayerChipAtIndex(j, player) && executeMove(move2)) {
 
 							// we found a sequence of 4 moves
 							List<Pair<Integer, Integer>> finalMoveOrder = new LinkedList<Pair<Integer, Integer>>();

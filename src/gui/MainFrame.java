@@ -153,7 +153,7 @@ public class MainFrame extends JFrame implements ActionListener {
 			rbEasy.setSelected(true);
 			rbMedium.setSelected(false);
 			rbHard.setSelected(false);
-			System.out.println("easy mode selected");
+			// System.out.println("easy mode selected");
 			if (Leader.comp1 != null)
 				Leader.comp1.setTimeLimit(TIME_EASY);
 			if (Leader.comp2 != null)
@@ -163,7 +163,7 @@ public class MainFrame extends JFrame implements ActionListener {
 			rbEasy.setSelected(false);
 			rbMedium.setSelected(true);
 			rbHard.setSelected(false);
-			System.out.println("medium mode selected");
+			// System.out.println("medium mode selected");
 			mctsTimeLimit = TIME_MEDIUM;
 			if (Leader.comp1 != null)
 				Leader.comp1.setTimeLimit(TIME_MEDIUM);
@@ -173,7 +173,7 @@ public class MainFrame extends JFrame implements ActionListener {
 			rbEasy.setSelected(false);
 			rbMedium.setSelected(false);
 			rbHard.setSelected(true);
-			System.out.println("hard mode selected");
+			// System.out.println("hard mode selected");
 			mctsTimeLimit = TIME_HARD;
 			if (Leader.comp1 != null)
 				Leader.comp1.setTimeLimit(TIME_HARD);
