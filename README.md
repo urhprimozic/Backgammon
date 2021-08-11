@@ -23,5 +23,7 @@ Computer player uses Monte Carlo Tree Search with intuitive hevristic. Heavily i
 ## Usage 
 Game menus are in Slovene. To play a new game, select player type from the **Nova igra** menu. To change the difficulty of computer player, click **Težavnost**.
 
-To make a move, first click **ROLL DICE**, than click and drag a desired chip to a desired location. 
+To make a move, first click **ROLL DICE**, than click and drag desired movable chip to a desired location. Off board chips are stored on the right side, removed chips are on the wood in the middle.
+
+[Human player playing vs computer](https://github.com/urhprimozic/Backgammon/blob/main/demo.gif)
 
