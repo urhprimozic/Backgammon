@@ -28,7 +28,8 @@ public class MonteCarloTreeSearch {
 	private final double cpuct = 1.0;
 	private final double EPS = 1e-8;
 	/**
-	 * Maximal number of recursive calls in {@code search()} allowed. When excedeed, searching is stopped and hevristic is used to update {@code entry}.
+	 * Maximal number of recursive calls in {@code search()} allowed. When excedeed,
+	 * searching is stopped and hevristic is used to update {@code entry}.
 	 */
 	private final int STACK_LIMIT = 120;
 	/**
@@ -141,8 +142,7 @@ public class MonteCarloTreeSearch {
 	 * Gets the negative value of the evaluation of the current canonical form. This
 	 * is the main MCTS loop.
 	 *
-	 * @param board the canonical form of the board
-	 * depth current depth
+	 * @param board the canonical form of the board depth current depth
 	 * @return The evaluation of the current canonical form.
 	 */
 	public double search(Board board, int depth) {
@@ -187,12 +187,12 @@ public class MonteCarloTreeSearch {
 			return -v;
 		}
 
-		if (depth > STACK_LIMIT){
+		if (depth > STACK_LIMIT) {
 			System.out.println("Exceeded stack limit. Exiting search..");
 			Pair<Map<List<Pair<Integer, Integer>>, Double>, Double> result = heuristic.get(board);
 			entry.P = result.getFirst();
 			double v = result.getLast();
-			return -v/10;
+			return -v / 10;
 		}
 
 		Set<List<Pair<Integer, Integer>>> valids = entry.V;
