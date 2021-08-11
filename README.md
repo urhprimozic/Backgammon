@@ -25,5 +25,5 @@ Game menus are in Slovene. To play a new game, select player type from the **Nov
 
 To make a move, first click **ROLL DICE**, than click and drag desired movable chip to a desired location. Off board chips are stored on the right side, removed chips are on the wood in the middle.
 
-[Human player playing vs computer](https://github.com/urhprimozic/Backgammon/blob/main/demo.gif)
+![Human player playing vs computer](https://github.com/urhprimozic/Backgammon/blob/main/demo.gif)
 
